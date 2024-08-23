@@ -1,0 +1,6 @@
+
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=93.190.46.34,33301;Database=uh1399606_cinemate_bd;User Id=uh1399606_cinemate_bd;Password=15061991g;TrustServerCertificate=True;"
+  }
+}

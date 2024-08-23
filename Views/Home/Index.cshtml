@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <h1>Backend for Cinemate</h1>
+
+</div>
+<div>
+    <button id="loadCategories">Load</button>
+    URL: http://backend.cinemate.pp.ua/api/Categories
+</div>
+
+
+
+<div id="categories"></div>
+<br/>
+    <br/>
+<div class ="alert alert-primary">
+    Endpoint - передача данных для регистрации пользователя   <br />
+  URL: http://backend.cinemate.pp.ua/api/signupuser<br/>
+  метод запроса - POST
+    <ul>ключи соответствующие модели сервера
+            <li>userName</li>
+            <li>firstName</li>
+            <li>surname</li>
+            <li>email - обязательное поле</li>
+            <li>phoneNumber</li>
+            <li>password - обязательное поле/li>
+            <li>avatar</li>
+        </ul>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - авторизация пользователя<br />
+    URL: http://backend.cinemate.pp.ua/api/auth<br />
+    метод запроса - POST
+    <ul>
+        ключи соответствующие модели сервера 
+        <li>email - обязательное поле</li>
+        <li>password - обязательное поле</li>
+    </ul>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#loadCategories').click(function () {
+            $.ajax({
+                url: '/api/Categories',
+                method: 'GET',
+                success: function (data) {
+                    $('#categories').html('<p>' + JSON.stringify(data, null, 2) + '</p> ');
+                },
+                error: function (error) {
+                    $('#categories').html('<p>An error occurred</p>');
+                }
+            });
+        });
+    });
+</script>
+
