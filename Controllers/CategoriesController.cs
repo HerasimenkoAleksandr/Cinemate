@@ -24,6 +24,9 @@ namespace cinemate.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            var totalSubcategoriesCount = _dataContext.Gategories
+    .SelectMany(g => g.SubCategories) // Выбираем все подкатегории
+    .Count();
             var meta = new MetaData
             {
                 Service = "Categories",
@@ -32,7 +35,7 @@ namespace cinemate.Controllers
                 PerPage = 4,
                 Page = 1,
                 LastPage = 4,
-               // Count = 5,
+                CountSubcategories = totalSubcategoriesCount,
                 Locale = "en-US"
             };
 
@@ -87,7 +90,6 @@ namespace cinemate.Controllers
                 return NotFound(new { Message = "Category not found" });
             }
 
-
             var meta = new MetaData
             {
                 Service = "Categories",
@@ -96,7 +98,7 @@ namespace cinemate.Controllers
                 PerPage = 3, 
                 Page = 1,     
                 LastPage = (int)Math.Ceiling((double)category.ContentCount / 3), // Adjust per page count
-               // Count = category.SubCategories.ContentCount, // Total number of subcategories in the category
+                CountSubcategories = category.ContentCount, // Total number of subcategories in the category
                 Locale = "en-US"
             };
 
@@ -105,7 +107,6 @@ namespace cinemate.Controllers
                 Meta = meta,
                 Data = category
             };
-
             return Ok(response);
         }
     }

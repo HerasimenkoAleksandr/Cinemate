@@ -8,7 +8,7 @@
             public int PerPage { get; set; }
             public int Page { get; set; }
             public int LastPage { get; set; }
-            public int Count { get; set; }
+            public int CountSubcategories { get; set; }
             public string Locale { get; set; }
     }
 }
