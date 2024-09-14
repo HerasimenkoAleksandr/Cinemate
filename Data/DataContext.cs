@@ -10,6 +10,8 @@ namespace cinemate.Data
         public DbSet<SubCategoriesEntity> SubCategoriesEntity { get; set; }
         public DbSet<Entities.MoviesEntities> MoviesEntities { get; set; } // Проверьте правильность имени
 
+        public DbSet<LikeForMovie> LikeForMovie { get; set; }
+
         public DataContext(DbContextOptions options) : base(options)
         { }
 
@@ -21,13 +23,25 @@ namespace cinemate.Data
                 .HasOne(m => m.Category)
                 .WithMany(c => c.Movies)
                 .HasForeignKey(m => m.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); // не дозволить видалити Category, якщо звязок з існуючим Movies
 
             modelBuilder.Entity<MoviesEntities>()
                 .HasOne(m => m.SubCategory)
                 .WithMany(sc => sc.Movies)
                 .HasForeignKey(m => m.SubCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);  // не дозволить видалити SubCategory, якщо звязок з існуючим Movies
+
+            modelBuilder.Entity<LikeForMovie>()
+                 .HasOne(ul => ul.User)
+                 .WithMany()
+                 .HasForeignKey(ul => ul.UserId)
+                 .OnDelete(DeleteBehavior.Cascade);  // Видалення пов'язане з користувачем
+
+            modelBuilder.Entity<LikeForMovie>()
+                .HasOne(ul => ul.Movie)
+                .WithMany()
+                .HasForeignKey(ul => ul.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);  // Видалення пов'язане з фільмом
         }
     }
 }

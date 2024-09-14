@@ -63,6 +63,31 @@
 <br />
 
 <div class="alert alert-primary">
+    <div>
+        Endpoint - Обробляє лайки або дизлайки фільма. <br />
+        <button id="likeButton" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-liked="false">Like</button>
+        <button id="dislikeButton" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-disliked="false">Dislike</button>
+        URL: https://backend.cinemate.pp.ua/api/likes/toggle-like<br /><br />
+        
+        Метод запиту - POST<br />
+        
+        Мриклад запиту:<br />
+
+          {MovieId": "123e4567-e89b-12d3-a456-426614174000"<br />
+          "IsLiked": true,<br />
+          "IsDisliked": false}
+       
+    </div>
+
+    <div id="like"></div>
+</div>
+<br />
+<br />
+
+
+
+
+<div class="alert alert-primary">
     Endpoint - передача данных для регистрации пользователя<br />
     URL: http://backend.cinemate.pp.ua/api/signupuser<br />
     метод запроса - POST
@@ -87,6 +112,33 @@
         <li>email - обязательное поле</li>
         <li>password - обязательное поле</li>
     </ul>
+   
+
+    @{
+        var userName = Context.Session.GetString("AuthUserId");
+    }
+
+    <div class="alert alert-primary">
+        @if (userName != null)
+        {
+            <p>Добро пожаловать, @userName.!</p>
+        }
+        else
+        {
+            <p>Пожалуйста, войдите в систему.</p>
+            <form id="authForm" method="post" >
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <button type="submit">Login</button>
+            </form>
+        }
+    </div>
 </div>
+
+
 
 <script src="~/js/scripts.js"></script>

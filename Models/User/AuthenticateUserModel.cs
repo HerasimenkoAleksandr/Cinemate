@@ -5,9 +5,9 @@ namespace cinemate.Models.User
     public class AuthenticateUserModel
     {
         [FromForm(Name = "email")]
-        public string Email { get; set; }
+        public String Email { get; set; }
 
         [FromForm(Name = "password")]
-        public string Password { get; set; }
+        public String Password { get; set; }
     }
 }

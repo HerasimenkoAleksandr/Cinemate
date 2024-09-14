@@ -14,6 +14,9 @@ builder.Services.AddSingleton<IHashService, Md5HashService>();
 
 builder.Services.AddDistributedMemoryCache();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 
 builder.Services.AddSession(options =>
@@ -108,6 +111,7 @@ app.UseRouting();
 app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthorization();
+
 
 app.UseSession();
 

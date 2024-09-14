@@ -29,8 +29,10 @@ namespace cinemate.Middleware
             // за наявності - перевірити валідність шляхом пошуку у БД
             if (context.Session.Keys.Contains("AuthUserId"))
             {
-                string userId = context.Session.GetString("AuthUserId")!; // Замените на фактический ID пользователя
-                User user = _dataContext.Users.FirstOrDefault(u => u.Email == userId);
+                string userIdString = context.Session.GetString("AuthUserId")!; // Замените на фактический ID пользователя
+                
+                var userId= Guid.Parse(userIdString);
+                User user = _dataContext.Users.FirstOrDefault(u => u.Id == userId);
               
 
 
