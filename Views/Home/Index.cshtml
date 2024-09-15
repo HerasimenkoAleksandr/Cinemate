@@ -1,6 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Backend for Cinemate";
 }
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
@@ -9,7 +12,7 @@
 <div class="alert alert-primary">
 <div>
      Endpoint - повертає перелік категорій на які розподілено фільми<br />
-    <button id="loadCategories">Load Categories</button>
+        <button class="btn btn-light" id="loadCategories">Load Categories</button>
     URL: http://backend.cinemate.pp.ua/api/Categories
 </div>
 
@@ -20,7 +23,7 @@
 <div class="alert alert-primary">
 <div>
         Endpoint - повертає перелік підкатегорій на які розподілено категрії<br />
-    <button id="loadSubCategories">Load SubCategories</button>
+        <button class="btn btn-light" id="loadSubCategories">Load SubCategories</button>
     URL: http://backend.cinemate.pp.ua/api/Categories/61D20472-5017-48B9-B976-07E36A396A95
 </div>
 
@@ -31,7 +34,7 @@
     <div class="alert alert-primary">
 <div>
         Endpoint - повертає усі фільми обраної категрії <br />
-    <button id="loadMoviesFromCategories">Load Movies From Categories</button>
+        <button class="btn btn-light" id="loadMoviesFromCategories">Load Movies From Categories</button>
     URL: https://backend.cinemate.pp.ua/api/movies?categoryId=61D20472-5017-48B9-B976-07E36A396A95
 </div>
 
@@ -42,7 +45,7 @@
         <div class="alert alert-primary">
 <div>
         Endpoint - повертає усі фільми обраної підкатегорії <br />
-    <button id="loadMoviesFromSubCategories">Load Movies From SubCategories</button>
+        <button class="btn btn-light" id="loadMoviesFromSubCategories">Load Movies From SubCategories</button>
     URL: https://backend.cinemate.pp.ua/api/movies?subcategoryId=0966A6CA-BE90-4AFF-BE04-CF4EFF71236E
 </div>
 
@@ -53,7 +56,7 @@
 <div class="alert alert-primary">
     <div>
         Endpoint - повертає обраний фільм <br />
-        <button id="loadMovie">Load Movie</button>
+        <button class="btn btn-light" id="loadMovie">Load Movie</button>
         URL: https://backend.cinemate.pp.ua/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5
     </div>
 
@@ -64,25 +67,26 @@
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - Обробляє лайки або дизлайки фільма. <br />
-        <button id="likeButton" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-liked="false">Like</button>
-        <button id="dislikeButton" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-disliked="false">Dislike</button>
+        Endpoint - Обробляє лайки або дизлайки фільма після успішної автентифікації. <br />
+        <button id="likeButton" class="btn btn-light" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-liked="false">Like</button>
+        <button id="dislikeButton" class="btn btn-light" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-disliked="false">Dislike</button>
         URL: https://backend.cinemate.pp.ua/api/likes/toggle-like<br /><br />
-        
         Метод запиту - POST<br />
-        
         Мриклад запиту:<br />
-
           {MovieId": "123e4567-e89b-12d3-a456-426614174000"<br />
           "IsLiked": true,<br />
           "IsDisliked": false}
-       
+    </div><br />
+    <div>
+        Endpoint - повертає true чи false у разі якщо кнопка like\dislike натиснута або не натиснута авторизованим користувачем щодо фільму<br />
+        URL: https://backend.cinemate.pp.ua/api/likes/get-status?movieId=123e4567-e89b-12d3-a456-426614174000<br /><br />
     </div>
-
-    <div id="like"></div>
+    <div id="likeresult"></div>
 </div>
 <br />
 <br />
+
+
 
 
 
@@ -133,7 +137,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required><br><br>
 
-                <button type="submit">Login</button>
+                <button class="btn btn-light" type="submit">Login</button>
             </form>
         }
     </div>
@@ -141,4 +145,4 @@
 
 
 
-<script src="~/js/scripts.js"></script>
+

@@ -25,7 +25,13 @@ namespace cinemate.Controllers
         [HttpGet("get-status")]
         public IActionResult GetStatus(Guid movieId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+           
+            String userId = HttpContext
+                      .User
+                      .Claims
+                      .First(claim => claim.Type == ClaimTypes.Sid)
+                      .Value;
+
             if (!Guid.TryParse(userId, out var userIdGuid))
             {
                 return Unauthorized();
@@ -112,25 +118,39 @@ namespace cinemate.Controllers
                         if (existingLike.IsLiked && request.IsLiked)
                         {
                             movie.likeCount = (movie.likeCount ?? 0) - 1;
+                            existingLike.IsLiked = false;
+                        }
+                        else
+                        {
+                            if (!existingLike.IsLiked && request.IsLiked)
+                            {
+                                movie.likeCount = (movie.likeCount ?? 0) + 1;
+                                existingLike.IsLiked = request.IsLiked;
+
+                            }
                         }
                         if (existingLike.IsDisliked && request.IsDisliked)
                         {
                             movie.dislikeCount = (movie.dislikeCount ?? 0) - 1;
+                            existingLike.IsDisliked = false;
                         }
-
-                        if (!existingLike.IsLiked && request.IsLiked)
+                        else
                         {
-                            movie.likeCount = (movie.likeCount ?? 0) + 1;
-                            existingLike.IsLiked = request.IsLiked;
-
+                            if (!existingLike.IsDisliked && request.IsDisliked)
+                            {
+                                movie.dislikeCount = (movie.dislikeCount ?? 0) + 1;
+                                existingLike.IsDisliked = request.IsDisliked;
+                            }
                         }
-                        if (!existingLike.IsDisliked && request.IsDisliked)
-                        {
-                            movie.dislikeCount = (movie.dislikeCount ?? 0) + 1;
-                            existingLike.IsDisliked = request.IsDisliked;
-                        }
-                        _context.SaveChanges();
+                                     _context.SaveChanges();
                     }
+                    return Ok(new
+                    {
+                        MovieId = request.MovieId,
+                        likeCount = movie.likeCount,
+                        dislikeCount = movie.dislikeCount
+
+                    });
                 }
                 else
                 {
@@ -153,7 +173,13 @@ namespace cinemate.Controllers
                           movie.dislikeCount = (movie.dislikeCount ?? 0) + 1;
                       }
                     _context.SaveChanges();
-                    return Ok(new { message = " successfully!" });
+                    return Ok(new 
+                    {
+                        MovieId = request.MovieId,
+                        likeCount = movie.likeCount,
+                        dislikeCount = movie.dislikeCount
+
+                    });
                 }
 
                

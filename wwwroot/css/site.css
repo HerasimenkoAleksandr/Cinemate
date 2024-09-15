@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.btn:active {
+    transform: scale(0.90); /* Уменьшение кнопки при нажатии */
+}

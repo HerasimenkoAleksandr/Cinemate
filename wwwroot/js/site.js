@@ -90,20 +90,16 @@
 
 
     function updateButtonStates() {
-            const movieId = likeButton ? likeButton.dataset.movieId : null;
-
+            //const movieId = likeButton ? likeButton.dataset.movieId : null;
+        const movieId = likeButton.dataset.movieId;
     if (movieId) {
         fetch(`/api/likes/get-status?movieId=${movieId}`, {
             method: 'GET'
         })
             .then(response => response.json())
             .then(data => {
-                if (likeButton && dislikeButton) {
-                    likeButton.innerText = data.IsLiked ? 'Liked' : 'Like';
-                    dislikeButton.innerText = data.IsDisliked ? 'Disliked' : 'Dislike';
-                    likeButton.dataset.liked = data.IsLiked;
-                    dislikeButton.dataset.disliked = data.IsDisliked;
-                }
+                document.getElementById('likeresult').textContent = JSON.stringify(data, null, 2);
+                console.log('Success:', data);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -136,7 +132,7 @@
     loadData('#loadSubCategories', '/api/Categories/61D20472-5017-48B9-B976-07E36A396A95', '#subcategories');
     loadData('#loadMoviesFromCategories', '/api/movies?categoryId=61D20472-5017-48B9-B976-07E36A396A95', '#moviesFromCategories');
     loadData('#loadMoviesFromSubCategories', '/api/movies?subcategoryId=0966A6CA-BE90-4AFF-BE04-CF4EFF71236E', '#moviesFromSubCategories');
-    loadData('#loadMovie', '/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#movie');
+        loadData('#loadMovie', '/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#movie');
         });
     });
 
