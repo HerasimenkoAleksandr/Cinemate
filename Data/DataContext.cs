@@ -11,10 +11,12 @@ namespace cinemate.Data
         public DbSet<Entities.MoviesEntities> MoviesEntities { get; set; } // Проверьте правильность имени
 
         public DbSet<LikeForMovie> LikeForMovie { get; set; }
+        public DbSet<CommentMoviesEntity> CommentMovies { get; set; }
+
+        public DbSet<FavoriteMovieEntity> FavoriteMovies { get; set; }
 
         public DataContext(DbContextOptions options) : base(options)
         { }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,6 +44,31 @@ namespace cinemate.Data
                 .WithMany()
                 .HasForeignKey(ul => ul.MovieId)
                 .OnDelete(DeleteBehavior.Cascade);  // Видалення пов'язане з фільмом
-        }
+
+            modelBuilder.Entity<CommentMoviesEntity>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.CommentMovies)
+                .HasForeignKey(c => c.IdUsers);
+
+            // Связь между MoviesEntities и CommentEntity (один ко многим)
+            modelBuilder.Entity<CommentMoviesEntity>()
+                .HasOne(c => c.Movie)
+                .WithMany(m => m.CommentMovies)
+                .HasForeignKey(c => c.IdMovie);
+
+            // Настройка каскадного удаления для FavoriteMovie
+            modelBuilder.Entity<FavoriteMovieEntity>()
+                .HasOne(f => f.Movie)
+                .WithMany(m => m.FavoriteMovies)  // Связь "Один ко многим"
+                .HasForeignKey(f => f.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);  // Удаление избранных фильмов при удалении фильма
+
+            modelBuilder.Entity<FavoriteMovieEntity>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.FavoriteMovies)  // Связь "Один ко многим"
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);  // Удаление избранных фильмов при удалении пользователя
+        
+    }
     }
 }

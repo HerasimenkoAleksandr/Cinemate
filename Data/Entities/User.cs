@@ -13,5 +13,9 @@
         public String? Avatar { get; set; }
         public DateTime RegistrerDt { get; set; } = DateTime.Now;
         public DateTime? DeleteDt { get; set; }
+
+        public ICollection<CommentMoviesEntity> CommentMovies { get; set; } = new List<CommentMoviesEntity>();
+
+        public ICollection<FavoriteMovieEntity> FavoriteMovies { get; set; } = new List<FavoriteMovieEntity>();
     }
 }

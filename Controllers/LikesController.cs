@@ -25,7 +25,6 @@ namespace cinemate.Controllers
         [HttpGet("get-status")]
         public IActionResult GetStatus(Guid movieId)
         {
-           
             String userId = HttpContext
                       .User
                       .Claims

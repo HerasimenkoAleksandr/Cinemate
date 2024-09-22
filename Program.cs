@@ -37,21 +37,18 @@ builder.Services.AddDbContext<DataContext>(options =>
     {
         sqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, schema: "cinemate");
     }));
-
 // Добавление CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://frontend.cinemate.pp.ua")
+            builder.SetIsOriginAllowed(o=>true)
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials();
         });
 });
-
-
-
 
 // Добавление контроллеров с представлениями
 builder.Services.AddControllersWithViews();

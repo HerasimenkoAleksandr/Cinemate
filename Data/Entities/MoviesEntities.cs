@@ -17,6 +17,11 @@
 
         public Gategories Category { get; set; }
         public SubCategoriesEntity SubCategory { get; set; }
+
+        // Один фильм может иметь много комментариев
+        public ICollection<CommentMoviesEntity> CommentMovies { get; set; } = new List<CommentMoviesEntity>();
+        
+        public ICollection<FavoriteMovieEntity> FavoriteMovies { get; set; } = new List<FavoriteMovieEntity>();
     }
 
 }

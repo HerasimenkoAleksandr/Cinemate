@@ -9,6 +9,62 @@
     <h1 class="display-4">Welcome</h1>
     <h1>Backend for Cinemate</h1>
 </div>
+
+
+<div class="alert alert-primary">
+    Endpoint - запит для реєстрації користувача<br />
+    URL: http://backend.cinemate.pp.ua/api/signupuser<br />
+    метод запиту - POST
+    <ul>
+        ключі відповідно до моделі сервера
+        <li>userName</li>
+        <li>firstName</li>
+        <li>surname</li>
+        <li>email - обязательное поле</li>
+        <li>phoneNumber</li>
+        <li>password - обязательное поле</li>
+        <li>avatar</li>
+    </ul>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - авторизація користувача<br />
+    URL: http://backend.cinemate.pp.ua/api/auth<br />
+    метод запиту - POST
+    <ul>
+        ключі відповідно до моделі сервера
+        <li>email - обов'язкове поле (для прикладу використовуйте-qaaa@gmail.com)</li>
+        <li>password - обов'язкове поле (для прикладу використовуйте-1111)</li>
+    </ul>
+
+
+    @{
+        var userName = Context.Session.GetString("AuthUserId");
+    }
+
+    <div class="alert alert-primary">
+        @if (userName != null)
+        {
+            <p>Ласкаво просимо, @userName.!</p>
+        }
+        else
+        {
+            <p>Будь ласка, увійдіть до системи.</p>
+            <form id="authForm" method="post">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <button class="btn btn-light" type="submit">Login</button>
+            </form>
+        }
+    </div>
+</div>
+
+
+
 <div class="alert alert-primary">
 <div>
      Endpoint - повертає перелік категорій на які розподілено фільми<br />
@@ -22,7 +78,7 @@
 <br />
 <div class="alert alert-primary">
 <div>
-        Endpoint - повертає перелік підкатегорій на які розподілено категрії<br />
+        Endpoint - повертає перелік підкатегорій на які розділено категрії<br />
         <button class="btn btn-light" id="loadSubCategories">Load SubCategories</button>
     URL: http://backend.cinemate.pp.ua/api/Categories/61D20472-5017-48B9-B976-07E36A396A95
 </div>
@@ -72,10 +128,11 @@
         <button id="dislikeButton" class="btn btn-light" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-disliked="false">Dislike</button>
         URL: https://backend.cinemate.pp.ua/api/likes/toggle-like<br /><br />
         Метод запиту - POST<br />
-        Мриклад запиту:<br />
+        приклад запиту:<br />
           {MovieId": "123e4567-e89b-12d3-a456-426614174000"<br />
           "IsLiked": true,<br />
-          "IsDisliked": false}
+        "IsDisliked": false}<br /><br />
+        <div id="likeCount"></div>
     </div><br />
     <div>
         Endpoint - повертає true чи false у разі якщо кнопка like\dislike натиснута або не натиснута авторизованим користувачем щодо фільму<br />
@@ -86,63 +143,115 @@
 <br />
 <br />
 
-
-
-
-
-
 <div class="alert alert-primary">
-    Endpoint - передача данных для регистрации пользователя<br />
-    URL: http://backend.cinemate.pp.ua/api/signupuser<br />
-    метод запроса - POST
+    Endpoint - додати коментар до фільму<br />
+    URL: http://backend.cinemate.pp.ua/api/comment<br />
+    метод запиту - POST
     <ul>
-        ключи соответствующие модели сервера
-        <li>userName</li>
-        <li>firstName</li>
-        <li>surname</li>
-        <li>email - обязательное поле</li>
-        <li>phoneNumber</li>
-        <li>password - обязательное поле</li>
-        <li>avatar</li>
+        ключі відповідно до моделі сервера
+        <li>IdMovie - обов'язкове поле = "123e4567-e89b-12d3-a456-426614174000"</li>
+        <li>Comment - обов'язкове поле</li>
     </ul>
-</div>
-
-<div class="alert alert-primary">
-    Endpoint - авторизация пользователя<br />
-    URL: http://backend.cinemate.pp.ua/api/auth<br />
-    метод запроса - POST
-    <ul>
-        ключи соответствующие модели сервера
-        <li>email - обязательное поле</li>
-        <li>password - обязательное поле</li>
-    </ul>
-   
-
-    @{
-        var userName = Context.Session.GetString("AuthUserId");
-    }
 
     <div class="alert alert-primary">
+        <p>Додайте коментар</p>
+            <form id="commentForm" method="post">
+            <label for="commentId">Write a comment:</label>
+            <textarea class="form-control" id="commentId" name="commentId" rows="3" required></textarea><br><br>
+                @if (userName != null)
+                {
+                    <button class="btn btn-light" type="submit">Add comment</button>
+                }
+                else
+                {
+                <p>Кнопка буде активною після авторизації</p>
+                <button class="btn btn-light" type="submit" disabled>Add comment</button>
+                }
+            </form>
+        <div id="commentresponse"></div>
+    </div>
+</div>
+<br />
+<br />
+<div class="alert alert-primary">
+    <div>
+        Endpoint - повертає коментарі до обраного фільму <br />
+        <button class="btn btn-light" id="loadComment">Load comments</button>
+        URL: http://backend.cinemate.pp.ua/api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5 <br />
+        Id фільму - "5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" <br />
+    </div>
+    <br />
+    <div id="commentsAll"></div>
+</div>
+<br />
+<br />
+<div class="alert alert-primary">
+    Endpoint - видалення коментаря по id <br />
+    URL: http://backend.cinemate.pp.ua/api/comment/{idComment}<br />
+    метод запиту - DELETE
+    ключі відповідно до моделі сервера
+    <ul>
+    <li>idComment - обязательное поле</li>
+    </ul>
+    <br />
+    <p>Будь ласка додайте Id коментаря</p>
+    <form id="deleteComment" >
+        <label for="idComment">Id comment:</label>
+        <input type="text" id="idComment" name="idComment" required><br><br>
         @if (userName != null)
         {
-            <p>Добро пожаловать, @userName.!</p>
+            <button class="btn btn-light" type="submit">Delete comment</button>
         }
         else
         {
-            <p>Пожалуйста, войдите в систему.</p>
-            <form id="authForm" method="post" >
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required><br><br>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required><br><br>
-
-                <button class="btn btn-light" type="submit">Login</button>
-            </form>
+            <p>Кнопка буде активною після авторизації</p>
+            <button class="btn btn-light" type="submit" disabled>Delete comment</button>
         }
-    </div>
+    </form>
+    <div id="resultDeleteCommentMessage"></div>
+    
 </div>
 
+<br />
+<div class="alert alert-primary">
+    Endpoint - додавання фільму до категорії обраних<br />
+    URL: http://backend.cinemate.pp.ua/api/FavoriteMovies<br />
+    метод запиту - POST
+    <ul>
+        ключі відповідно до моделі сервера
+        <li>movieId - обязательное поле</li> 
+    </ul>
+    <br />
+        @if (userName != null)
+        {
+        <button id="favoriteButton" class="btn btn-light" type="submit">Додати в обране</button>
+        }
+        else
+        {
+            <p>Кнопка буде активною після авторизації</p>
+        <button id="favoriteButton" class="btn btn-light" type="submit" disabled>Додати в обране</button>
+        }
 
+    <div id="favoriteResponse"></div>
+</div>
 
-
+<div class="alert alert-primary">
+    Endpoint - видалення фільму з обраних <br />
+    URL: http://backend.cinemate.pp.ua/api/favoritemovies<br />
+    метод запиту - DELETE
+    <ul>
+    ключі відповідно до моделі сервера
+    <li> movieId - обязательное поле</li>
+    </ul>
+    <br />
+        @if (userName != null)
+        {
+        <button id="favoriteButtonDelete" class="btn btn-light" type="submit">Remove movie from Favorites</button>
+        }
+        else
+        {
+            <p>Кнопка буде активною після авторизації</p>
+        <button id="favoriteButtonDelete" class="btn btn-light" type="submit" disabled>Remove movie from Favorites</button>
+        }
+    <div id="resultDeleteMovieFromFavoritesMessage"></div>
+</div>

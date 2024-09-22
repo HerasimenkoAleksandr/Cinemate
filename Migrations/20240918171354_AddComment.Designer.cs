@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using cinemate.Data;
 
@@ -11,9 +12,11 @@ using cinemate.Data;
 namespace cinemate.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240918171354_AddComment")]
+    partial class AddComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,27 +54,6 @@ namespace cinemate.Migrations
                     b.HasIndex("IdUsers");
 
                     b.ToTable("CommentMovies");
-                });
-
-            modelBuilder.Entity("cinemate.Data.Entities.FavoriteMovieEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FavoriteMovies");
                 });
 
             modelBuilder.Entity("cinemate.Data.Entities.Gategories", b =>
@@ -269,25 +251,6 @@ namespace cinemate.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("cinemate.Data.Entities.FavoriteMovieEntity", b =>
-                {
-                    b.HasOne("cinemate.Data.Entities.MoviesEntities", "Movie")
-                        .WithMany("FavoriteMovies")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("cinemate.Data.Entities.User", "User")
-                        .WithMany("FavoriteMovies")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("cinemate.Data.Entities.LikeForMovie", b =>
                 {
                     b.HasOne("cinemate.Data.Entities.MoviesEntities", "Movie")
@@ -347,8 +310,6 @@ namespace cinemate.Migrations
             modelBuilder.Entity("cinemate.Data.Entities.MoviesEntities", b =>
                 {
                     b.Navigation("CommentMovies");
-
-                    b.Navigation("FavoriteMovies");
                 });
 
             modelBuilder.Entity("cinemate.Data.Entities.SubCategoriesEntity", b =>
@@ -359,8 +320,6 @@ namespace cinemate.Migrations
             modelBuilder.Entity("cinemate.Data.Entities.User", b =>
                 {
                     b.Navigation("CommentMovies");
-
-                    b.Navigation("FavoriteMovies");
                 });
 #pragma warning restore 612, 618
         }
