@@ -61,6 +61,8 @@ namespace cinemate.Controllers
                     ReleaseYear = mfsc.ReleaseYear,
                     Director = mfsc.Director,
                     Actors = mfsc.Actors,
+                    likeCount = mfsc.likeCount,
+                    dislikeCount = mfsc.dislikeCount,
                     CategoryId = mfsc.CategoryId,
                     SubCategoryId = mfsc.SubCategoryId
                 }).ToList();
@@ -122,6 +124,8 @@ namespace cinemate.Controllers
                         ReleaseYear = mfsc.ReleaseYear,
                         Director = mfsc.Director,
                         Actors = mfsc.Actors,
+                        likeCount = mfsc.likeCount,
+                        dislikeCount = mfsc.dislikeCount,
                         CategoryId = mfsc.CategoryId,
                         SubCategoryId = mfsc.SubCategoryId
                     }).ToList();
@@ -188,6 +192,8 @@ namespace cinemate.Controllers
                 ReleaseYear = movie.ReleaseYear,
                 Director = movie.Director,
                 Actors = movie.Actors,
+                likeCount = movie.likeCount,
+                dislikeCount = movie.dislikeCount,
                 CategoryId = movie.CategoryId,
                 SubCategoryId = movie.SubCategoryId
             };

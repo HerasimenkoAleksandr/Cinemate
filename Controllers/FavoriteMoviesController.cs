@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using cinemate.Data;
 using cinemate.Data.Entities;
+using cinemate.Models.Movie;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -87,6 +88,68 @@ namespace cinemate.Controllers
             _dataContext.SaveChanges();
 
             return Ok(new { message = "Фільм видалено з обраних" });
+        }
+
+        // Новый метод для получения списка избранных фильмов
+        [HttpGet]
+        public IActionResult GetFavoriteMovies()
+        {
+           
+            String userId = HttpContext
+                    .User
+                    .Claims
+                    .First(claim => claim.Type == ClaimTypes.Sid)
+                    .Value;
+
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Unauthorized();
+            }
+
+            // Получаем все фильмы, которые добавлены в избранное текущим пользователем
+            var favoriteMovies = _dataContext.FavoriteMovies
+                .Where(f => f.UserId == userIdGuid)
+                .Select(f => new MoviesModel
+                {
+                    Id = f.Movie.Id,
+                    Title = f.Movie.Title,
+                    Description = f.Movie.Description,
+                    Picture = f.Movie.Picture,
+                    URL = f.Movie.URL,
+                    ReleaseYear = f.Movie.ReleaseYear,
+                    Director = f.Movie.Director,
+                    Actors = f.Movie.Actors,
+                    likeCount = f.Movie.likeCount,
+                    dislikeCount = f.Movie.dislikeCount,
+                    CategoryId = f.Movie.CategoryId,
+                    SubCategoryId = f.Movie.SubCategoryId
+                })
+                .ToList();
+
+            if (favoriteMovies.Count > 0)
+            {
+                var responseModel = new FavoriteMoviesResponseModel
+                {
+                    UserId = userIdGuid,
+                    FavoriteMoviesCount = favoriteMovies.Count,
+                    FavoriteMovies = favoriteMovies
+                };
+                return Ok(responseModel);
+            }
+            else
+            {
+                var responseModel = new FavoriteMoviesResponseModel
+                {
+                    UserId = userIdGuid,
+                    FavoriteMoviesCount = favoriteMovies.Count,
+                };
+                return Ok(responseModel);
+
+            }
+            // Создаем модель ответа с метаданными
+          
+
+           
         }
     }
 }

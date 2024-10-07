@@ -26,4 +26,3 @@ namespace cinemate.Models.User
         public IFormFile? Avatar { get; set; }
     }
 }
-

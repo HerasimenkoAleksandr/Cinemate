@@ -28,8 +28,46 @@
         if (deleteMovieFromFavorites) {
             deleteMovieFromFavorites.addEventListener('click', handleDeleteMovieFromFavoritesSubmit);
         }
+
+        const deleteAuthButton = document.getElementById('deleteAuthUser');
+
+        if (deleteAuthButton) {
+            deleteAuthButton.addEventListener('click', signOutUser);
+        }
        
     });
+
+function signOutUser() {
+
+    const url = `/api/auth`;
+    fetch(url, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+            // Добавьте другие заголовки, если необходимо, например, для аутентификации
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                // Успешный выход, обработайте его
+                return response.json();
+            } else {
+                throw new Error("Ошибка при выходе");
+            }
+        })
+        .then(data => {
+            // Здесь можно обработать успешный ответ, например:
+            console.log(data.status); // "OK"
+            // Перенаправление на главную страницу или обновление интерфейса
+            window.location.href = '/'; // Перенаправление на главную страницу
+        })
+        .catch(error => {
+            console.error("Произошла ошибка:", error);
+            // Обработка ошибок (например, показать уведомление пользователю)
+        });
+}
+
+
 
     function handleDeleteMovieFromFavoritesSubmit(event) {
     event.preventDefault(); // Предотвращаем стандартное действие формы
@@ -303,7 +341,8 @@
             loadData('#loadMoviesFromCategories', '/api/movies?categoryId=61D20472-5017-48B9-B976-07E36A396A95', '#moviesFromCategories');
             loadData('#loadMoviesFromSubCategories', '/api/movies?subcategoryId=0966A6CA-BE90-4AFF-BE04-CF4EFF71236E', '#moviesFromSubCategories');
             loadData('#loadMovie', '/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#movie');
-        loadData('#loadComment', ' /api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#commentsAll');
+            loadData('#loadComment', ' /api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#commentsAll');
+            loadData('#loadFavoriteMovies', ' /api/FavoriteMovies', '#resultFavoriteMovies');
         });
     
 

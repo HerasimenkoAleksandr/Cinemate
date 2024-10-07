@@ -28,6 +28,21 @@
 </div>
 
 <div class="alert alert-primary">
+    Endpoint - запит для зміни інформації про користувача<br />
+    URL: http://backend.cinemate.pp.ua/api/signupuser<br />
+    метод запиту - PATCH
+    <ul>
+        ключі відповідно до моделі сервера(не обов'язкові)
+        <li>userName</li>
+        <li>firstName</li>
+        <li>surname</li>
+        <li>phoneNumber</li>
+        <li>password </li>
+        <li>avatar</li>
+    </ul>
+</div>
+
+<div class="alert alert-primary">
     Endpoint - авторизація користувача<br />
     URL: http://backend.cinemate.pp.ua/api/auth<br />
     метод запиту - POST
@@ -59,6 +74,17 @@
 
                 <button class="btn btn-light" type="submit">Login</button>
             </form>
+        }
+    </div>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - вихід користувача<br />
+    URL: http://backend.cinemate.pp.ua/api/auth<br />
+    <div class="alert alert-primary">
+        @if (userName != null)
+        {
+            <button class="btn btn-light" id="deleteAuthUser">Exit</button>
         }
     </div>
 </div>
@@ -255,3 +281,15 @@
         }
     <div id="resultDeleteMovieFromFavoritesMessage"></div>
 </div>
+
+<div class="alert alert-primary">
+    <div>
+        Endpoint - повертає усі фільми які авторизованим користувачем додано до "обраних"<br />
+        <button class="btn btn-light" id="loadFavoriteMovies">Load favorite movies</button>
+        URL: http://backend.cinemate.pp.ua/api/FavoriteMovies
+    </div>
+
+    <div id="resultFavoriteMovies"></div>
+</div>
+<br />
+<br />
