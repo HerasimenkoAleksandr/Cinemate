@@ -5,6 +5,7 @@ using cinemate.Models.Category;
 using cinemate.Models.Movie;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -37,6 +38,7 @@ namespace cinemate.Controllers
                 // Запрос к базе данных для получения фильмов по ID категории и подкатегории
                 var MoviesFromSubCat = _dataContext.MoviesEntities
                                 .Where(m => m.SubCategoryId == subcategoryGuid)
+                                .Where(mov=>mov.IsBanned==false)
                                 .ToList();
                
                 if (MoviesFromSubCat == null || !MoviesFromSubCat.Any())
@@ -103,6 +105,7 @@ namespace cinemate.Controllers
                     }
                     var MoviesFromCat = _dataContext.MoviesEntities
                                    .Where(m => m.CategoryId == categoryGuid)
+                                   .Where(mov => mov.IsBanned == false)
                                    .ToList();
                     // Если фильмы не найдены, возвращаем 404
                     if (MoviesFromCat == null || !MoviesFromCat.Any())
@@ -165,15 +168,20 @@ namespace cinemate.Controllers
         [HttpGet("{movieId}")]
         public IActionResult GetMovieById(Guid movieId)
         {
-           
+
             var movie = _dataContext.MoviesEntities
                             .SingleOrDefault(m => m.Id == movieId);
+                            
 
             var totalMoviesCount = _dataContext.MoviesEntities.Count();
             // If no movie found, return 404
             if (movie == null)
             {
                 return NotFound("Movie not found.");
+            }
+            if (movie.IsBanned == true)
+            {
+                return NotFound("Movie is blocked");
             }
             var category = _dataContext.Gategories
                     .SingleOrDefault(c => c.Id == movie.CategoryId);
@@ -218,5 +226,140 @@ namespace cinemate.Controllers
             // Return found movie
             return Ok(response);
         }
+        [HttpPatch("{movieId}/ban")]
+        public IActionResult BanMovie(Guid movieId)
+        {
+            var userId = HttpContext
+                    .User
+                    .Claims
+                    .First(claim => claim.Type == ClaimTypes.Sid)
+                    .Value;
+
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Unauthorized();
+            }
+           
+            var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
+
+            if (user == null || user.Role != "Admin")
+            {
+                return Forbid("You do not have permission to ban this movie!!!!!!!!.");
+            }
+
+            var movie = _dataContext.MoviesEntities.SingleOrDefault(m => m.Id == movieId);
+
+            if (movie == null)
+            {
+                return NotFound("Movie not found.");
+            }
+
+            movie.IsBanned = true;
+            _dataContext.SaveChanges();
+
+            return Ok(new { Message = "Movie banned successfully." });
+        }
+
+
+        [HttpPatch("{movieId}/unban")]
+        public IActionResult UnbanMovie(Guid movieId)
+        {
+            var userId = HttpContext
+                   .User
+                   .Claims
+                   .First(claim => claim.Type == ClaimTypes.Sid)
+                   .Value;
+
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Unauthorized();
+            }
+
+            var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
+
+            if (user == null || user.Role != "Admin")
+            {
+                return Forbid("You do not have permission to unban this movie.");
+            }
+
+            var movie = _dataContext.MoviesEntities.SingleOrDefault(m => m.Id == movieId);
+
+            if (movie == null)
+            {
+                return NotFound("Movie not found.");
+            }
+
+            movie.IsBanned = false;
+            _dataContext.SaveChanges();
+
+            return Ok(new { Message = "Movie unbanned successfully." });
+        }
+
+        [HttpGet("banned")]
+        public IActionResult GetBannedMovies()
+        {
+
+            var userId = HttpContext
+                   .User
+                   .Claims
+                   .First(claim => claim.Type == ClaimTypes.Sid)
+                   .Value;
+
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Unauthorized();
+            }
+
+            var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
+
+            if (user == null || user.Role != "Admin")
+            {
+                return Forbid("You do not have permission to view the list of blocked movies.");
+            }
+            // Query the database for banned movies
+            var bannedMovies = _dataContext.MoviesEntities
+                .Where(m => m.IsBanned == true)
+                .ToList();
+
+            // If no banned movies found, return a 404
+            if (bannedMovies == null || !bannedMovies.Any())
+            {
+                return NotFound("No banned movies found.");
+            }
+
+            // Map the banned movies to the MoviesModel
+            var movieModel = bannedMovies.Select(m => new MoviesModel
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Description = m.Description,
+                Picture = m.Picture,
+                URL = m.URL,
+                ReleaseYear = m.ReleaseYear,
+                Director = m.Director,
+                Actors = m.Actors,
+                likeCount = m.likeCount,
+                dislikeCount = m.dislikeCount,
+                CategoryId = m.CategoryId,
+                SubCategoryId = m.SubCategoryId
+            }).ToList();
+            var totalMoviesCount = _dataContext.MoviesEntities.Count();
+            // Prepare the response with metadata
+            var response = new MoviesResponse
+            {
+                Meta = new MovieMetaData
+                {
+                    Service = "Movies",
+                    Endpoint = "/api/movies/banned",
+                    TotalMovies = movieModel.Count,
+                    StatusMovies = "blocke",
+                },
+                Data = movieModel
+            };
+
+            // Return the response with the list of banned movies
+            return Ok(response);
+        }
+
     }
 }

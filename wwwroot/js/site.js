@@ -16,10 +16,8 @@
         if (deleteCommentForm) {
             deleteCommentForm.addEventListener('submit', handleDeleteCommentFormSubmit);
         }
-
         // Обработчик для формы добавления в избранное
         const favoriteButton = document.getElementById('favoriteButton');
-
         if (favoriteButton) {
             favoriteButton.addEventListener('click', handleFavoriteFormSubmit);
         }
@@ -30,14 +28,102 @@
         }
 
         const deleteAuthButton = document.getElementById('deleteAuthUser');
-
         if (deleteAuthButton) {
             deleteAuthButton.addEventListener('click', signOutUser);
         }
-       
+        const banMovieForm = document.getElementById('banMovieForm');
+        console.log('Form loaded:', banMovieForm); // Логування форми
+        if (banMovieForm) {
+            banMovieForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const formData = new FormData(banMovieForm);     
+                const action = event.submitter.value
+                console.log('Action:', action); 
+                if (action === 'ban') {
+                    handleBan(event);
+                } else if (action === 'unban') {
+                    handleUnban(event);
+                }
+            });
+        }
     });
 
-function signOutUser() {
+    function handleUnban(event) {
+    event.preventDefault(); // Предотвращаем стандартное действие формы
+
+    // Получаем значение из поля idMovieBan
+    const movieId = document.getElementById('idMovieBan').value.trim();
+    if (!movieId) {
+        console.error("Фільм не знайдено");
+        return;
+    }
+
+    const url = `/api/movies/${movieId}/unban`;
+
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+
+        }
+    })
+        .then(response => {
+            return response.json();
+            if (response.ok) {
+                return response.json(); // Если успешно, возвращаем JSON ответ
+            } else {
+                throw new Error('Сталася помилка');
+            }
+        })
+        .then(data => {
+            console.log(data.message); 
+            document.getElementById('resultBanMessage').textContent = "Фільм розблоковано!";
+            document.getElementById('idMovieBan').value = ''; // Очищаем значение поля
+        })
+        .catch(error => {
+            console.error('Ошибка:', error); // Обработка ошибки
+            document.getElementById('resultBanMessage').textContent = "Сталася помилка";
+        });
+}
+
+    function handleBan(event) {
+    event.preventDefault(); // Предотвращаем стандартное действие формы
+
+    // Получаем значение из поля idComment
+    const movieId = document.getElementById('idMovieBan').value.trim();
+    if (!movieId) {
+        console.error("Фільм не знайдено");
+        return;
+    }
+
+    const url = `/api/movies/${movieId}/ban`;
+
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+
+        }
+    })
+        .then(response => {
+            return response.json();
+            if (response.ok) {
+                return response.json(); // Если успешно, возвращаем JSON ответ
+            } else {
+                throw new Error('Сталася помилка');
+            }
+        })
+        .then(data => {
+            console.log(data.message); // Выводим сообщение об успешном удалении
+            document.getElementById('resultBanMessage').textContent = "Фільм заблоковано!";
+            document.getElementById('idMovieBan').value = ''; // Очищаем значение поля
+        })
+        .catch(error => {
+            console.error('Ошибка:', error); // Обработка ошибки
+            document.getElementById('resultBanMessage').textContent = "Сталася помилка";
+        });
+}
+    function signOutUser() {
 
     const url = `/api/auth`;
     fetch(url, {
@@ -66,9 +152,6 @@ function signOutUser() {
             // Обработка ошибок (например, показать уведомление пользователю)
         });
 }
-
-
-
     function handleDeleteMovieFromFavoritesSubmit(event) {
     event.preventDefault(); // Предотвращаем стандартное действие формы
 
@@ -77,7 +160,6 @@ function signOutUser() {
     // Вызываем функцию удаления комментария
     deleteMovieFromFavorites(movieId);
 }
-
     function deleteMovieFromFavorites(movieId) {
     const url = `/api/favoritemovies/${movieId}`;
 
@@ -106,8 +188,6 @@ function signOutUser() {
             document.getElementById('resultDeleteMovieFromFavoritesMessage').textContent = "Помилка при видаленні";
         });
 }
-
-
     function handleFavoriteFormSubmit(event) {
     event.preventDefault(); // Предотвращаем стандартное поведение формы
 
@@ -139,7 +219,6 @@ function signOutUser() {
         document.getElementById('favoriteResponse').textContent = 'Ошибка добавления фильма в избранное.';
     });
     }
-
     function handleDeleteCommentFormSubmit(event) {
             event.preventDefault(); // Предотвращаем стандартное действие формы
 
@@ -153,8 +232,6 @@ function signOutUser() {
             // Вызываем функцию удаления комментария
             deleteComment(commentId);
         }
-
-    // Функция отправки DELETE запроса
     function deleteComment(commentId) {
             const url = `/api/comment/${commentId}`;
 
@@ -256,11 +333,13 @@ function signOutUser() {
                     document.getElementById('responseMessage').innerText = 'An error occurred.';
                 });
         }
-    // Обработчики кнопок "Like" и "Dislike"
+
+// Обработчики кнопок "Like" и "Dislike"
     const likeButton = document.getElementById('likeButton');
+
     const dislikeButton = document.getElementById('dislikeButton');
 
-        if (likeButton && dislikeButton)
+    if (likeButton && dislikeButton)
         {
             likeButton.addEventListener('click', () =>
             {
@@ -272,7 +351,6 @@ function signOutUser() {
                  handleLikeOrDislike(dislikeButton, false, true);
             });
         }
-
     function handleLikeOrDislike(button, isLiked, isDisliked) {
             const movieId = button.dataset.movieId;
             const requestBody = {
@@ -316,9 +394,9 @@ function signOutUser() {
             });
             }
         }
-    // Инициализация состояния кнопок при загрузке страницы
-    updateButtonStates();
-        // jQuery обработчики для AJAX запросов
+    
+    updateButtonStates(); // Инициализация состояния кнопок при загрузке страницы
+        
     $(document).ready(function () {
         function loadData(buttonId, url, outputId) {
             $(buttonId).click(function () {
@@ -329,7 +407,13 @@ function signOutUser() {
                         $(outputId).html('<p>' + JSON.stringify(data, null, 2) + '</p>');
                     },
                     error: function (error) {
-                        $(outputId).html('<p>An error occurred</p>');
+                        if (error.status === 404) {
+                            // Если статус 404, выводим сообщение от API
+                            $(outputId).html('<p>' + error.responseText + '</p>');
+                        } else {
+                            // В остальных случаях выводим общее сообщение об ошибке
+                            $(outputId).html('<p>An error occurred</p>');
+                        }
                     }
                 });
             });
@@ -343,6 +427,7 @@ function signOutUser() {
             loadData('#loadMovie', '/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#movie');
             loadData('#loadComment', ' /api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#commentsAll');
             loadData('#loadFavoriteMovies', ' /api/FavoriteMovies', '#resultFavoriteMovies');
+            loadData('#loadMoviesFromStatusBlokce', ' api/movies/banned', '#moviesFromStatusBlokce');
         });
     
 

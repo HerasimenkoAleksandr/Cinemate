@@ -18,6 +18,9 @@
         public Gategories Category { get; set; }
         public SubCategoriesEntity SubCategory { get; set; }
 
+        // Новое поле для хранения статуса бана
+        public bool IsBanned { get; set; } = false;
+
         // Один фильм может иметь много комментариев
         public ICollection<CommentMoviesEntity> CommentMovies { get; set; } = new List<CommentMoviesEntity>();
         

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Data;
+using System.Security.Claims;
 
 namespace cinemate.Controllers
 {
@@ -56,6 +58,7 @@ namespace cinemate.Controllers
                 user = new
                 {
                     id = user.Id,
+                    Role= user.Role,
                     email = user.Email,
                     name = user.UserName,
                     firstName = user.FirstName,
@@ -84,7 +87,6 @@ namespace cinemate.Controllers
 
             return new { status = "OK" };
         }
-
 
     }
 }

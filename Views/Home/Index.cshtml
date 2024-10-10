@@ -50,6 +50,7 @@
         ключі відповідно до моделі сервера
         <li>email - обов'язкове поле (для прикладу використовуйте-qaaa@gmail.com)</li>
         <li>password - обов'язкове поле (для прикладу використовуйте-1111)</li>
+        <li>qaaa@gmail.com - надано статус адміністратора.</li>
     </ul>
 
 
@@ -81,6 +82,7 @@
 <div class="alert alert-primary">
     Endpoint - вихід користувача<br />
     URL: http://backend.cinemate.pp.ua/api/auth<br />
+    метод запиту - DELETE
     <div class="alert alert-primary">
         @if (userName != null)
         {
@@ -100,8 +102,8 @@
 
 <div  id="categories"></div>
 </div>
-<br />
-<br />
+
+
 <div class="alert alert-primary">
 <div>
         Endpoint - повертає перелік підкатегорій на які розділено категрії<br />
@@ -111,8 +113,8 @@
 
 <div  id="subcategories"></div>
 </div>
-<br />
-<br />
+
+
     <div class="alert alert-primary">
 <div>
         Endpoint - повертає усі фільми обраної категрії <br />
@@ -122,9 +124,9 @@
 
 <div  id="moviesFromCategories"></div>
 </div>
-<br />
-<br />
-        <div class="alert alert-primary">
+
+
+<div class="alert alert-primary">
 <div>
         Endpoint - повертає усі фільми обраної підкатегорії <br />
         <button class="btn btn-light" id="loadMoviesFromSubCategories">Load Movies From SubCategories</button>
@@ -133,19 +135,20 @@
 
 <div  id="moviesFromSubCategories"></div>
 </div>
-<br />
-<br />
+
+
 <div class="alert alert-primary">
     <div>
-        Endpoint - повертає обраний фільм <br />
+        Endpoint - повертає обраний фільм 
+        <br />
         <button class="btn btn-light" id="loadMovie">Load Movie</button>
         URL: https://backend.cinemate.pp.ua/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5
     </div>
-
+    <br />
     <div id="movie"></div>
 </div>
-<br />
-<br />
+
+
 
 <div class="alert alert-primary">
     <div>
@@ -166,8 +169,8 @@
     </div>
     <div id="likeresult"></div>
 </div>
-<br />
-<br />
+
+
 
 <div class="alert alert-primary">
     Endpoint - додати коментар до фільму<br />
@@ -197,8 +200,8 @@
         <div id="commentresponse"></div>
     </div>
 </div>
-<br />
-<br />
+
+
 <div class="alert alert-primary">
     <div>
         Endpoint - повертає коментарі до обраного фільму <br />
@@ -209,8 +212,8 @@
     <br />
     <div id="commentsAll"></div>
 </div>
-<br />
-<br />
+
+
 <div class="alert alert-primary">
     Endpoint - видалення коментаря по id <br />
     URL: http://backend.cinemate.pp.ua/api/comment/{idComment}<br />
@@ -238,7 +241,7 @@
     
 </div>
 
-<br />
+
 <div class="alert alert-primary">
     Endpoint - додавання фільму до категорії обраних<br />
     URL: http://backend.cinemate.pp.ua/api/FavoriteMovies<br />
@@ -285,11 +288,66 @@
 <div class="alert alert-primary">
     <div>
         Endpoint - повертає усі фільми які авторизованим користувачем додано до "обраних"<br />
-        <button class="btn btn-light" id="loadFavoriteMovies">Load favorite movies</button>
+        @if (userName != null)
+        {
+            <button class="btn btn-light" id="loadFavoriteMovies">Load favorite movies</button>
+        }
+        else
+        {
+            <p>Кнопка буде активною після авторизації</p>
+            <button class="btn btn-light" id="loadFavoriteMovies" disabled>Load favorite movies</button>
+        }
+       
         URL: http://backend.cinemate.pp.ua/api/FavoriteMovies
     </div>
 
     <div id="resultFavoriteMovies"></div>
 </div>
-<br />
-<br />
+
+<div class="alert alert-primary">
+    Endpoint - заблокувати фільм по ID <br />
+    URL: http://backend.cinemate.pp.ua/api/{movieId}/ban<br />
+    метод запиту - PATCH
+    <br /><br />
+    Endpoint - розблокувати фільм по ID <br />
+    URL: http://backend.cinemate.pp.ua/api/{movieId}/unban<br />
+    метод запиту - PATCH
+    <br />
+    <br />
+    Необхідно додати Id фільму
+    <form id="banMovieForm">
+        <label for="idMovieBan">Id movie:</label>
+        <input type="text" id="idMovieBan" name="idMovieBan" required><br><br>
+        @if (userName != null)
+        {
+            <button class="btn btn-light" type="submit" name="action" value="ban">Ban</button>
+            <button class="btn btn-light" type="submit" name="action" value="unban">Unban</button>
+        }
+        else
+        {
+            <p>Кнопки будуть активні після авторизації - дані будуть обролятись по запиту адміністратора</p>
+            <button class="btn btn-light" type="submit" disabled>Ban</button>
+            <button class="btn btn-light" type="submit" disabled>Unban</button>
+        }
+    </form>
+    <div id="resultBanMessage"></div>
+
+</div>
+
+<div class="alert alert-primary">
+    <div>
+        Endpoint - повертає адміністратору усі фільми, що заблоковано  <br />
+        @if (userName != null)
+        {
+            <button class="btn btn-light" id="loadMoviesFromStatusBlokce">Load movies from the blocked list</button>
+        }
+        else
+        {
+            <p>Кнопки будуть активні після авторизації - дані будуть обролятись по запиту адміністратора</p>
+            <button class="btn btn-light" id="loadMoviesFromStatusBlokce" disabled>Load movies from the blocked list</button>
+        }
+        URL: https://backend.cinemate.pp.ua/api/movies/banned
+    </div>
+
+    <div id="moviesFromStatusBlokce" "></div>
+</div>

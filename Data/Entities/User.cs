@@ -11,6 +11,7 @@
         public String? PasswordSalt { get; set; }
         public String? PasswordDk { get; set; }
         public String? Avatar { get; set; }
+        public string Role { get; set; } = "User";  // По умолчанию обычный пользователь
         public DateTime RegistrerDt { get; set; } = DateTime.Now;
         public DateTime? DeleteDt { get; set; }
 
