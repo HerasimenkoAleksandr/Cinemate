@@ -9,17 +9,29 @@ namespace cinemate.Data
         public DbSet<Gategories> Gategories { get; set; }
         public DbSet<SubCategoriesEntity> SubCategoriesEntity { get; set; }
         public DbSet<Entities.MoviesEntities> MoviesEntities { get; set; } // Проверьте правильность имени
-
         public DbSet<LikeForMovie> LikeForMovie { get; set; }
         public DbSet<CommentMoviesEntity> CommentMovies { get; set; }
-
         public DbSet<FavoriteMovieEntity> FavoriteMovies { get; set; }
-
+        public DbSet<PausedMovieEntity> PausedMovies { get; set; }
         public DataContext(DbContextOptions options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Настройка связи между User и PausedMovieEntity (один ко многим)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.PausedMovies)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);  // Ограничиваем удаление
+
+            // Настройка связи между MoviesEntities и PausedMovieEntity (один ко многим)
+            modelBuilder.Entity<MoviesEntities>()
+                .HasMany(m => m.PausedMovies)
+                .WithOne(p => p.Movie)
+                .HasForeignKey(p => p.MovieId)
+                .OnDelete(DeleteBehavior.Restrict);  // Ограничиваем удаление
 
             modelBuilder.Entity<MoviesEntities>()
                 .HasOne(m => m.Category)

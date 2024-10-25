@@ -18,5 +18,7 @@
         public ICollection<CommentMoviesEntity> CommentMovies { get; set; } = new List<CommentMoviesEntity>();
 
         public ICollection<FavoriteMovieEntity> FavoriteMovies { get; set; } = new List<FavoriteMovieEntity>();
+
+        public ICollection<PausedMovieEntity> PausedMovies { get; set; } = new List<PausedMovieEntity>();
     }
 }

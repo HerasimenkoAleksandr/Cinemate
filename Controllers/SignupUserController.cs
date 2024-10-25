@@ -16,8 +16,9 @@ namespace cinemate.Controllers
 
         private readonly DataContext _dataContext;
         private readonly IHashService _hashService;
+     
 
-        public SignupUserController(DataContext dataContext, IHashService hashService)
+        public SignupUserController(DataContext dataContext, IHashService hashService, ILogger<SignupUserController> logger)
         {
             _dataContext = dataContext;
             _hashService = hashService;
@@ -120,110 +121,123 @@ namespace cinemate.Controllers
         public async Task<IActionResult> UpdateUser([FromForm] UserModel userModel)
         {
 
-            
-            SignupUserValidation results = new SignupUserValidation();
-            bool isFormValid = true;
-
-            String userIdClaims = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
-
-            if (userIdClaims == null)
+            if (HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
-                return NotFound("Элемент не найден");
-            }
-            if (!Guid.TryParse(userIdClaims, out var userId))
-            {
-                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
-            }
 
-            // Проверка, существует ли пользователь
-            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
 
-            // Обновляем имя пользователя, если передано
-            if (!string.IsNullOrEmpty(userModel.UserName))
-            {
-                user.UserName = userModel.UserName;
-            }
-
-            // Обновляем имя (FirstName), если передано
-            if (!string.IsNullOrEmpty(userModel.FirstName))
-            {
-                user.FirstName = userModel.FirstName;
-            }
-
-            // Обновляем фамилию (Surname), если передано
-            if (!string.IsNullOrEmpty(userModel.Surname))
-            {
-                user.Surname = userModel.Surname;
-            }
-
-            // Обновляем номер телефона (PhoneNumber), если передано
-            if (!string.IsNullOrEmpty(userModel.PhoneNumber))
-            {
-                user.PhoneNumber = userModel.PhoneNumber;
-            }
-
-            // Обновляем пароль, если передано
-            if (!string.IsNullOrEmpty(userModel.Password))
-            {
-                // Хешируем новый пароль
-                string salt = _hashService.HexString(Guid.NewGuid().ToString());
-                string dk = _hashService.HexString(salt + userModel.Password);
-                user.PasswordSalt = salt;
-                user.PasswordDk = dk;
-            }
-
-            // Обновляем аватар, если передан
-            if (userModel.Avatar != null && userModel.Avatar.Length > 0)
-            {
-                // Изменяем имя файла на уникальное и сохраняем файл
-                int dotPosition = userModel.Avatar.FileName.LastIndexOf('.');
-                if (dotPosition == -1)
+                if (userModel == null)
                 {
-                    return BadRequest(new { message = "Files without extension are not accepted" });
+                    return BadRequest("User model is null.");
                 }
-                else
+              
+
+                var userIdClaims = HttpContext
+                                .User
+                                .Claims
+                                .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                .Value;
+
+                if (userIdClaims == null)
                 {
-                    string ext = userModel.Avatar.FileName.Substring(dotPosition);
-                    string directory = Directory.GetCurrentDirectory();
-                    string fileName;
-                    string savedName;
 
-                    do
+                    return NotFound("элемент не найден: var userIdClaims = HttpContext.User.Claims");
+                }
+                if (!Guid.TryParse(userIdClaims, out var userId))
+                {
+                    return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
+                }
+
+                // Проверка, существует ли пользователь
+                var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                // Обновляем имя пользователя, если передано
+                if (!string.IsNullOrEmpty(userModel.UserName))
+                {
+                    user.UserName = userModel.UserName;
+                }
+
+                // Обновляем имя (FirstName), если передано
+                if (!string.IsNullOrEmpty(userModel.FirstName))
+                {
+                    user.FirstName = userModel.FirstName;
+                }
+
+                // Обновляем фамилию (Surname), если передано
+                if (!string.IsNullOrEmpty(userModel.Surname))
+                {
+                    user.Surname = userModel.Surname;
+                }
+
+                // Обновляем номер телефона (PhoneNumber), если передано
+                if (!string.IsNullOrEmpty(userModel.PhoneNumber))
+                {
+                    user.PhoneNumber = userModel.PhoneNumber;
+                }
+
+                // Обновляем пароль, если передано
+                if (!string.IsNullOrEmpty(userModel.Password))
+                {
+                    // Хешируем новый пароль
+                    string salt = _hashService.HexString(Guid.NewGuid().ToString());
+                    string dk = _hashService.HexString(salt + userModel.Password);
+                    user.PasswordSalt = salt;
+                    user.PasswordDk = dk;
+                }
+
+                // Обновляем аватар, если передан
+                if (userModel.Avatar != null && userModel.Avatar.Length > 0)
+                {
+                    // Изменяем имя файла на уникальное и сохраняем файл
+                    int dotPosition = userModel.Avatar.FileName.LastIndexOf('.');
+                    if (dotPosition == -1)
                     {
-                        fileName = Guid.NewGuid() + ext;
-                        savedName = Path.Combine(directory, "wwwroot", "avatars", fileName);
-                    } while (System.IO.File.Exists(savedName));
-
-                    using Stream stream = System.IO.File.OpenWrite(savedName);
-                    await userModel.Avatar.CopyToAsync(stream);
-
-                    // Удаление старого аватара
-                    if (!string.IsNullOrEmpty(user.Avatar))
-                    {
-                        string oldAvatarPath = Path.Combine(directory, "wwwroot", "avatars", user.Avatar);
-                        if (System.IO.File.Exists(oldAvatarPath))
-                        {
-                            System.IO.File.Delete(oldAvatarPath);
-                        }
+                        throw new Exception("Files without extension are not accepted");
+                        //return BadRequest(new { message = "Files without extension are not accepted" });
                     }
+                    else
+                    {
+                        string ext = userModel.Avatar.FileName.Substring(dotPosition);
+                        string directory = Directory.GetCurrentDirectory();
+                        string fileName;
+                        string savedName;
 
-                    user.Avatar = fileName;
+                        do
+                        {
+                            fileName = Guid.NewGuid() + ext;
+                            savedName = Path.Combine(directory, "wwwroot", "avatars", fileName);
+                        } while (System.IO.File.Exists(savedName));
+
+                        using Stream stream = System.IO.File.OpenWrite(savedName);
+                        await userModel.Avatar.CopyToAsync(stream);
+
+                        // Удаление старого аватара
+                        if (!string.IsNullOrEmpty(user.Avatar))
+                        {
+                            string oldAvatarPath = Path.Combine(directory, "wwwroot", "avatars", user.Avatar);
+                            if (System.IO.File.Exists(oldAvatarPath))
+                            {
+                                System.IO.File.Delete(oldAvatarPath);
+                            }
+                        }
+
+                        user.Avatar = fileName;
+                    }
                 }
+
+                // Сохраняем изменения в базе данных
+                _dataContext.Users.Update(user);
+                await _dataContext.SaveChangesAsync();
+
+                return Ok(new { message = "User updated successfully!" });
             }
 
-            // Сохраняем изменения в базе данных
-            _dataContext.Users.Update(user);
-            await _dataContext.SaveChangesAsync();
 
-            return Ok(new { message = "User updated successfully!" });
+
+            return Unauthorized(new { message = "User is not authenticated." });
         }
 
     }

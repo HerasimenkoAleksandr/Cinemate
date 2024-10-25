@@ -20,9 +20,9 @@
         <li>userName</li>
         <li>firstName</li>
         <li>surname</li>
-        <li>email - обязательное поле</li>
+        <li>email - обов'язкове поле</li>
         <li>phoneNumber</li>
-        <li>password - обязательное поле</li>
+        <li>password - обов'язкове поле</li>
         <li>avatar</li>
     </ul>
 </div>
@@ -220,7 +220,7 @@
     метод запиту - DELETE
     ключі відповідно до моделі сервера
     <ul>
-    <li>idComment - обязательное поле</li>
+        <li>idComment - обов'язкове поле</li>
     </ul>
     <br />
     <p>Будь ласка додайте Id коментаря</p>
@@ -350,4 +350,24 @@
     </div>
 
     <div id="moviesFromStatusBlokce" "></div>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - запит для збереження часу, на якому було призупинено перегляд фільму, авторизованим користувачем<br />
+    URL: http://cinemate.pp.ua/api/pause/save<br />
+    метод запиту - POST
+    <ul>
+        ключі відповідно до моделі сервера
+        <li>movieId</li>
+        <li>pauseTime</li>
+    </ul>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - запит - повертає час, на якому було призупинено перегляд фільму, авторизованим користувачем<br />
+    URL: http://cinemate.pp.ua/api/pause/get/{movieId}<br />
+    метод запиту - GET
+    <ul>
+        movieId - ID фільму
+    </ul>
 </div>

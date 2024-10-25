@@ -3,6 +3,7 @@ using cinemate.Middleware;
 using cinemate.Services.DataInitializer;
 using cinemate.Services.Hash;
 using cinemate.Services.YouTubeService;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -37,6 +38,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     {
         sqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, schema: "cinemate");
     }));
+
+
 // Добавление CORS
 builder.Services.AddCors(options =>
 {
@@ -52,11 +55,19 @@ builder.Services.AddCors(options =>
 
 // Добавление контроллеров с представлениями
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<AddFromYouTubeService>();
 
+//builder.Services.AddTransient<AddFromYouTubeService>();
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+    context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+    context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+
+    await next();
+});
 /*using (var serviceScope = app.Services.CreateScope())
 {
     var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
@@ -90,8 +101,6 @@ var app = builder.Build();
    
 }*/
 
-
-
 // Конфигурация HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
@@ -103,16 +112,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 // Использование настроек CORS
 app.UseCors("AllowSpecificOrigins");
-
-app.UseAuthorization();
-
 
 app.UseSession();
 
 app.UseMiddleware<AuthSessionMiddleware>();
+
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

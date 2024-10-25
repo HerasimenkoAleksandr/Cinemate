@@ -33,9 +33,7 @@ namespace cinemate.Middleware
                 
                 var userId= Guid.Parse(userIdString);
                 User user = _dataContext.Users.FirstOrDefault(u => u.Id == userId);
-              
-
-
+  
                 if (user != null)
                 {
                     // перекладаємо відомості про користувача до 
