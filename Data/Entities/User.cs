@@ -20,5 +20,7 @@
         public ICollection<FavoriteMovieEntity> FavoriteMovies { get; set; } = new List<FavoriteMovieEntity>();
 
         public ICollection<PausedMovieEntity> PausedMovies { get; set; } = new List<PausedMovieEntity>();
+        public ICollection<PriorityCategoriesEntity> PriorityCategories { get; set; } = new List<PriorityCategoriesEntity>();
     }
 }
+

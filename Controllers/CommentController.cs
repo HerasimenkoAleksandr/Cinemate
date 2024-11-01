@@ -2,6 +2,7 @@
 using cinemate.Data.Entities;
 using cinemate.Models.Movie;
 using cinemate.Models.User;
+using cinemate.Services.TokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,32 +16,40 @@ namespace cinemate.Controllers
     {
         private readonly DataContext _dataContext;
 
-        public CommentController(DataContext dataContext)
+        private readonly TokenValidationService _tokenValidationService;
+
+        public CommentController(DataContext dataContext, TokenValidationService tokenValidationService)
         {
             _dataContext = dataContext;
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpPost]
         public object AddComment([FromForm] CommentMoviesModel request)
         {
+
             if (HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
-
-                // Если пользователь не аутентифицирован, вернуть ошибку
-                String userIdClaims = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
+                var userIdClaims = HttpContext
+                                .User
+                                .Claims
+                                .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                .Value;
 
                 if (userIdClaims == null)
                 {
-                    return NotFound("Элемент не найден");
+                    userIdClaims = _tokenValidationService.ValidateToken();
+                    if (userIdClaims == null)
+                    {
+                        return Unauthorized();
+                    }
+
                 }
                 if (!Guid.TryParse(userIdClaims, out var userId))
                 {
                     return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
                 }
+               
                 if (!Guid.TryParse(request.IdMovie.ToString(), out var movieId))
                 {
                     return BadRequest(new { message = "Invalid Movie ID format" });

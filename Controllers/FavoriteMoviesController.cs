@@ -20,8 +20,7 @@ namespace cinemate.Controllers
             _dataContext = dataContext;
         }
 
-        [HttpPost]
-        
+        [HttpPost]  
         public IActionResult AddToFavorites([FromForm] Guid movieId)
         {
             String userId = HttpContext
@@ -59,8 +58,7 @@ namespace cinemate.Controllers
 
             return Ok(new { message = "The movie is added to favorites" });
         }
-        
-        
+             
         [HttpDelete("{movieId:guid}")]
         public IActionResult RemoveFromFavorites(Guid movieId)
         {
@@ -89,7 +87,6 @@ namespace cinemate.Controllers
 
             return Ok(new { message = "Фільм видалено з обраних" });
         }
-
         // Новый метод для получения списка избранных фильмов
         [HttpGet]
         public IActionResult GetFavoriteMovies()

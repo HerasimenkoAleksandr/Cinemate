@@ -13,6 +13,7 @@ namespace cinemate.Data
         public DbSet<CommentMoviesEntity> CommentMovies { get; set; }
         public DbSet<FavoriteMovieEntity> FavoriteMovies { get; set; }
         public DbSet<PausedMovieEntity> PausedMovies { get; set; }
+        public DbSet<PriorityCategoriesEntity> PriorityCategories { get; set; }
         public DataContext(DbContextOptions options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -80,7 +81,21 @@ namespace cinemate.Data
                 .WithMany(u => u.FavoriteMovies)  // Связь "Один ко многим"
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Cascade);  // Удаление избранных фильмов при удалении пользователя
-        
-    }
+            
+            modelBuilder.Entity<PriorityCategoriesEntity>()
+                    .HasKey(upc => upc.Id); // Первичный ключ
+
+            modelBuilder.Entity<PriorityCategoriesEntity> ()
+                .HasOne(upc => upc.User)
+                .WithMany(u => u.PriorityCategories)
+                .HasForeignKey(upc => upc.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PriorityCategoriesEntity> ()
+                .HasOne(upc => upc.Category)
+                .WithMany(c => c.PriorityUsers)
+                .HasForeignKey(upc => upc.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

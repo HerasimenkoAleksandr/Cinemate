@@ -80,6 +80,25 @@
 </div>
 
 <div class="alert alert-primary">
+    <div>
+        Endpoint - повертає інформацію про авторизованого користувача<br />
+        @if (userName != null)
+        {
+            <button class="btn btn-light" id="loadUserData">Load user data</button>
+        }
+        else
+        {
+            <p>Кнопки будуть активні після авторизації </p>
+            <button class="btn btn-light" id="loadUserData" disabled>Load user data</button>
+        }
+        URL: http://backend.cinemate.pp.ua/api/signupuser
+    </div>
+
+    <div id="userdata"></div>
+</div>
+
+
+<div class="alert alert-primary">
     Endpoint - вихід користувача<br />
     URL: http://backend.cinemate.pp.ua/api/auth<br />
     метод запиту - DELETE
@@ -365,9 +384,57 @@
 
 <div class="alert alert-primary">
     Endpoint - запит - повертає час, на якому було призупинено перегляд фільму, авторизованим користувачем<br />
-    URL: http://cinemate.pp.ua/api/pause/get/{movieId}<br />
+    URL: http://cinemate.pp.ua/api/pause/{movieId}<br />
     метод запиту - GET
     <ul>
         movieId - ID фільму
     </ul>
 </div>
+
+<div class="alert alert-primary">
+    <div>
+        Endpoint - повертає перелік фільмів з часом, на якому було призупинено їх перегляд, авторизованим користувачем<br />
+    @if (userName != null)
+    {
+            <button class="btn btn-light" id="loadpause">Load movies with pause</button>
+    }
+    else
+    {
+            <p>Кнопка буде активна після авторизації </p>
+            <button class="btn btn-light" id="loadpause" disabled>Load movies with pause</button>
+    }
+        URL: http://backend.cinemate.pp.ua/api/pause
+    </div>
+
+    <div id="pause"></div>
+</div>
+
+<div class="alert alert-primary">
+    Endpoint - запит, який встановлює для користувача пріорітетні категорії<br />
+    URL: http://backend.cinemate.pp.ua/api/prioritycategories<br />
+    метод запиту - POST
+    <ul>
+        <li> Content-Type: application/json </li>
+        <li> ["guid1", "guid2", "guid3"]</li>     
+    </ul>
+</div>
+
+<div class="alert alert-primary">
+    <div>
+        Endpoint - повертає перелік пріорітетних фільмів враховуючи вибір пріорітетних категорій користувачем <br />
+        метод запиту - GET<br />
+    @if (userName != null)
+    {
+            <button class="btn btn-light" id="loadPriority">Load movies </button>
+    }
+    else
+    {
+            <p>Кнопка буде активна після авторизації </p>
+            <button class="btn btn-light" id="loadPriority" disabled>Load movies</button>
+    }
+        URL: http://backend.cinemate.pp.ua/api/prioritycategories
+    </div>
+    <div id="priority"></div>
+</div>
+
+   

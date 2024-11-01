@@ -123,6 +123,10 @@
             document.getElementById('resultBanMessage').textContent = "Сталася помилка";
         });
 }
+
+function deleteCookie(name) {
+    document.cookie = name + '=; Max-Age=0; path=/; domain=localhost; SameSite=Lax';
+}
     function signOutUser() {
 
     const url = `/api/auth`;
@@ -136,7 +140,9 @@
         .then(response => {
             if (response.ok) {
                 // Успешный выход, обработайте его
+                
                 return response.json();
+               
             } else {
                 throw new Error("Ошибка при выходе");
             }
@@ -144,6 +150,8 @@
         .then(data => {
             // Здесь можно обработать успешный ответ, например:
             console.log(data.status); // "OK"
+           // deleteCookie('.AspNetCore.Session'); // Удалите куки для сессии
+           // deleteCookie('.AspNetCore.Antiforgery.LyOnq7gsTOs'); // Удалите куки для антифорджер
             // Перенаправление на главную страницу или обновление интерфейса
             window.location.href = '/'; // Перенаправление на главную страницу
         })
@@ -419,7 +427,8 @@
             });
         }
 
-            // Привязка обработчиков к кнопкам
+        // Привязка обработчиков к кнопкам
+            loadData('#loadUserData', '/api/Signupuser', '#userdata');
             loadData('#loadCategories', '/api/Categories', '#categories');
             loadData('#loadSubCategories', '/api/Categories/61D20472-5017-48B9-B976-07E36A396A95', '#subcategories');
             loadData('#loadMoviesFromCategories', '/api/movies?categoryId=61D20472-5017-48B9-B976-07E36A396A95', '#moviesFromCategories');
@@ -428,6 +437,8 @@
             loadData('#loadComment', ' /api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5', '#commentsAll');
             loadData('#loadFavoriteMovies', ' /api/FavoriteMovies', '#resultFavoriteMovies');
             loadData('#loadMoviesFromStatusBlokce', ' api/movies/banned', '#moviesFromStatusBlokce');
+            loadData('#loadpause', '/api/pause', '#pause');
+            loadData('#loadPriority', '/api/prioritycategories', '#priority');
         });
     
 

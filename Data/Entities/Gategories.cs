@@ -9,8 +9,7 @@
         public int ContentCount { get; set; }
 
         public ICollection<SubCategoriesEntity> SubCategories { get; set; }
-       
         public ICollection<MoviesEntities> Movies { get; set; }
-
+        public ICollection<PriorityCategoriesEntity> PriorityUsers { get; set; } = new List<PriorityCategoriesEntity>();
     }
 }

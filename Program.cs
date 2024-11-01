@@ -2,16 +2,49 @@ using cinemate.Data;
 using cinemate.Middleware;
 using cinemate.Services.DataInitializer;
 using cinemate.Services.Hash;
+using cinemate.Services.TokenValidation;
 using cinemate.Services.YouTubeService;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Добавляем JWT аутентификацию
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+
 builder.Services.AddSingleton<IHashService, Md5HashService>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<TokenValidationService>(); // Регистрируем сервис
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -119,6 +152,7 @@ app.UseSession();
 
 app.UseMiddleware<AuthSessionMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

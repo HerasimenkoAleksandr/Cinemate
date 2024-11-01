@@ -1,9 +1,12 @@
 ﻿using cinemate.Data;
+using cinemate.Data.Entities;
 using cinemate.Models.User;
 using cinemate.Services.Hash;
+using cinemate.Services.TokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
@@ -16,12 +19,12 @@ namespace cinemate.Controllers
 
         private readonly DataContext _dataContext;
         private readonly IHashService _hashService;
-     
-
-        public SignupUserController(DataContext dataContext, IHashService hashService, ILogger<SignupUserController> logger)
+        private readonly TokenValidationService _tokenValidationService;
+        public SignupUserController(DataContext dataContext, IHashService hashService, ILogger<SignupUserController> logger, TokenValidationService tokenValidationService)
         {
             _dataContext = dataContext;
             _hashService = hashService;
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpPost]
@@ -121,6 +124,9 @@ namespace cinemate.Controllers
         public async Task<IActionResult> UpdateUser([FromForm] UserModel userModel)
         {
 
+            // Если сессии нет, проверяем токен
+            var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+
             if (HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
 
@@ -139,8 +145,12 @@ namespace cinemate.Controllers
 
                 if (userIdClaims == null)
                 {
+                    userIdClaims = _tokenValidationService.ValidateToken();
+                    if(userIdClaims == null)
+                    {
+                        return Unauthorized();
+                    }
 
-                    return NotFound("элемент не найден: var userIdClaims = HttpContext.User.Claims");
                 }
                 if (!Guid.TryParse(userIdClaims, out var userId))
                 {
@@ -232,7 +242,24 @@ namespace cinemate.Controllers
                 _dataContext.Users.Update(user);
                 await _dataContext.SaveChangesAsync();
 
-                return Ok(new { message = "User updated successfully!" });
+                return Ok(new
+                {   
+                    message = "User updated successfully!",
+                    user = new
+                    {
+                        id = user.Id,
+                        Role = user.Role,
+                        email = user.Email,
+                        name = user.UserName,
+                        firstName = user.FirstName,
+                        surname = user.Surname,
+                        phoneNumber = user.PhoneNumber,
+                        avatar = user.Avatar,
+                        reistrerDt = user.RegistrerDt
+                    }
+                });
+
+                
             }
 
 
@@ -240,6 +267,49 @@ namespace cinemate.Controllers
             return Unauthorized(new { message = "User is not authenticated." });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
+        {
+            var userIdClaims = HttpContext
+                             .User
+                             .Claims
+                             .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                             .Value;
+
+            if (userIdClaims == null)
+            {
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
+            }
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == userIdGuid);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+            return Ok(new
+            {
+                user = new
+                {
+                    id = user.Id,
+                    Role = user.Role,
+                    email = user.Email,
+                    name = user.UserName,
+                    firstName = user.FirstName,
+                    surname = user.Surname,
+                    phoneNumber = user.PhoneNumber,
+                    avatar = user.Avatar,
+                    reistrerDt = user.RegistrerDt
+                }
+            });
+        }
     }
 }
 
