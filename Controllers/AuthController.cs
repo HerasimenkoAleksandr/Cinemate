@@ -89,25 +89,6 @@ namespace cinemate.Controllers
             };
         }
 
-        //[HttpDelete]
-        //public object SignOut()
-        //{
-        //    // Получаем идентификатор пользователя из сессии
-        //    var userId = HttpContext.Session.GetString("AuthUserId");
-
-        //    if (userId == null)
-        //    {
-        //        HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        //        return new { status = "User not authenticated" };
-        //    }
-
-        //    // Очищаем сессию для пользователя
-        //    HttpContext.Session.Remove("AuthUserId");
-
-        //    return new { status = "OK" };
-        //}
-
-
 
         [HttpDelete]
         [Authorize]
@@ -133,37 +114,6 @@ namespace cinemate.Controllers
             }
             return Unauthorized(new { status = "User not authenticated" });
         }
-
-        
-
-//    // Если сессии нет, проверяем токен
-//    var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
-
-//            if (authHeader != null && authHeader.StartsWith("Bearer "))
-//            {
-//                var token = authHeader.Substring("Bearer ".Length).Trim();
-               
-//                if (token!=null) 
-//                {
-//                    var jwtHandler = new JwtSecurityTokenHandler();
-//    var jwtToken = jwtHandler.ReadJwtToken(token);
-
-//    // Извлекаем необходимые данные из токена
-//    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
-//                    return Ok(new { status = $"Token, user signed out - {userId}" });
-//                }
-                    
-                
-              
-//            }
-//            else
-//{
-//    return Unauthorized(new { status = "No token provided" });
-//}
-
-//Если не удалось найти пользователя ни в сессии, ни по токену
-//            return Unauthorized(new { status = "User not authenticated" });
-//        }
 
         private string GenerateJwtToken(User user)
         {

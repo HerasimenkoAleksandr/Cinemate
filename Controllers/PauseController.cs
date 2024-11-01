@@ -25,15 +25,24 @@ namespace cinemate.Controllers
         [HttpPost("save")]
         public async Task<IActionResult> SavePause([FromBody] SavePauseRequest request)
         {
-            String userId = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
+            var userIdClaims = HttpContext
+                                .User
+                                .Claims
+                                .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             var pausedMovie = await _context.PausedMovies

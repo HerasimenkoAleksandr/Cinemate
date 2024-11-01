@@ -437,4 +437,32 @@
     <div id="priority"></div>
 </div>
 
+<div class="alert alert-primary">
+    Endpoint - пошук фільмів<br />
+    URL: http://backend.cinemate.pp.ua//api/movies/search?search={search}<br />
+    метод запиту - GEt
+    <ul>
+        <li>{search} - рядок, введена користувачем інформація щодо пошуку фільму"</li>
+    </ul>
+
+    <div class="alert alert-primary">
+        <p>Введіть інформацію для пошуку</p>
+        <form id="searchForm" method="post">
+            <label for="searchId">Search:</label>
+            <input class="form-control" id="searchId"  placeholder="Поиск..." name="searchId" type="text" required></input><br><br>
+            <button class="btn btn-light" type="submit">Search</button>
+ @*    @if (userName != null)
+    {
+                <button class="btn btn-light" type="submit">Search</button>
+    }
+    else
+    {
+                <p>Кнопка буде активною після авторизації</p>
+                <button class="btn btn-light" type="submit" disabled>Search</button>
+    } *@
+        </form>
+        <div id="searchresponse"></div>
+    </div>
+</div>
+
    

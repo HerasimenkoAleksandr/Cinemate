@@ -46,8 +46,49 @@
                 }
             });
         }
-    });
 
+        const searchForm = document.getElementById('searchForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', handleSearchFormSubmit);
+        }
+    });
+function handleSearchFormSubmit(event) {
+    event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+    // Получаем данные из формы
+    const searchQuery = document.getElementById('searchId').value.trim();
+    if (!searchQuery) {
+        console.error("Введите запрос для поиска");
+        return;
+    }
+
+    const url = `api/movies/search?search=${encodeURIComponent(searchQuery)}`;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при выполнении поиска');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Здесь вы можете обработать результаты поиска
+            console.log(data); // Например, выводим данные в консоль
+            // Вывод результатов на страницу
+            searchQuery.value = '';
+            document.getElementById('searchresponse').textContent = JSON.stringify(data, null, 2);
+            displaySearchResults(data); // Вызываем функцию для отображения результатов
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            // Обработка ошибок, например, отображение сообщения пользователю
+        });
+}
     function handleUnban(event) {
     event.preventDefault(); // Предотвращаем стандартное действие формы
 

@@ -124,12 +124,37 @@ namespace cinemate.Controllers
         [HttpDelete("{idComment:guid}")]
         public IActionResult DeleteComment(Guid idComment)
         {
+            var userIdClaims = HttpContext
+                            .User
+                            .Claims
+                            .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                            .Value;
+
+            if (userIdClaims == null)
+            {
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
+            }
             // Найти комментарий по ID
             var comment = _dataContext.CommentMovies.FirstOrDefault(c => c.Id == idComment);
-          
             if (comment == null)
             {
-                return NotFound(new { message = "Комментарий не найден" });
+                return NotFound(new { message = "Комментар не знайдено" });
+            }
+
+            if (comment.IdUsers != userIdGuid)
+            {
+                var userEmailClaim = HttpContext.User.Claims
+                         .FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
+                return NotFound(new { message = $"Коментар не належить користувачу - {userEmailClaim}" }); ;
             }
 
             // Удаление комментария

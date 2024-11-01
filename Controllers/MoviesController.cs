@@ -3,8 +3,11 @@ using cinemate.Data;
 using cinemate.Data.Entities;
 using cinemate.Models.Category;
 using cinemate.Models.Movie;
+using cinemate.Services.TokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -17,9 +20,12 @@ namespace cinemate.Controllers
     {
         private readonly DataContext _dataContext;
 
-        public MoviesController(DataContext dataContext)
+        private readonly TokenValidationService _tokenValidationService;
+
+        public MoviesController(DataContext dataContext, TokenValidationService tokenValidationService)
         {
             _dataContext = dataContext;
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpGet]
@@ -229,15 +235,24 @@ namespace cinemate.Controllers
         [HttpPatch("{movieId}/ban")]
         public IActionResult BanMovie(Guid movieId)
         {
-            var userId = HttpContext
-                    .User
-                    .Claims
-                    .First(claim => claim.Type == ClaimTypes.Sid)
-                    .Value;
+            var userIdClaims = HttpContext
+                               .User
+                               .Claims
+                               .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                               .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
            
             var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
@@ -264,15 +279,24 @@ namespace cinemate.Controllers
         [HttpPatch("{movieId}/unban")]
         public IActionResult UnbanMovie(Guid movieId)
         {
-            var userId = HttpContext
-                   .User
-                   .Claims
-                   .First(claim => claim.Type == ClaimTypes.Sid)
-                   .Value;
+            var userIdClaims = HttpContext
+                                .User
+                                .Claims
+                                .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
@@ -299,15 +323,24 @@ namespace cinemate.Controllers
         public IActionResult GetBannedMovies()
         {
 
-            var userId = HttpContext
-                   .User
-                   .Claims
-                   .First(claim => claim.Type == ClaimTypes.Sid)
-                   .Value;
+            var userIdClaims = HttpContext
+                                 .User
+                                 .Claims
+                                 .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                 .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             var user = _dataContext.Users.SingleOrDefault(u => u.Id == userIdGuid);
@@ -358,6 +391,67 @@ namespace cinemate.Controllers
             };
 
             // Return the response with the list of banned movies
+            return Ok(response);
+        }
+
+        [HttpGet("search")]
+        public IActionResult SearchMovies([FromQuery] string? search)
+        {
+
+            if (string.IsNullOrEmpty(search))
+            {
+                return BadRequest("Необходимо указать поисковый запрос.");
+            }
+
+            // Очистка и обрезка пробелов в поисковом запросе
+            search = search.Trim();
+            Console.WriteLine($"Searching for: {search}"); 
+
+            bool isReleaseYearSearch = int.TryParse(search, out int releaseYear);
+
+            var searchResults = _dataContext.MoviesEntities
+             .Where(m => !m.IsBanned &&
+             (m.Title.ToLower().Contains(search.ToLower()) ||
+             (m.Description != null && m.Description.ToLower().Contains(search.ToLower())) ||
+             (m.Director != null && m.Director.ToLower().Contains(search.ToLower())) ||
+             (isReleaseYearSearch && m.ReleaseYear == releaseYear)))
+             .ToList();
+
+            // Если фильмы не найдены, вернуть 404
+            if (searchResults == null || !searchResults.Any())
+            {
+                return NotFound("Фильмы по данному запросу не найдены.");
+            }
+
+            // Преобразование результатов поиска в модель для ответа
+            var movieModel = searchResults.Select(m => new MoviesModel
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Description = m.Description,
+                Picture = m.Picture,
+                URL = m.URL,
+                ReleaseYear = m.ReleaseYear,
+                Director = m.Director,
+                Actors = m.Actors,
+                likeCount = m.likeCount,
+                dislikeCount = m.dislikeCount,
+                CategoryId = m.CategoryId,
+                SubCategoryId = m.SubCategoryId
+            }).ToList();
+
+            var response = new MoviesResponse
+            {
+                Meta = new MovieMetaData
+                {
+                    Service = "Movies",
+                    Endpoint = $"/api/movies/search?query={search}",
+                    TotalMovies = movieModel.Count
+                },
+                Data = movieModel
+            };
+
+            // Возвращаем найденные фильмы
             return Ok(response);
         }
 

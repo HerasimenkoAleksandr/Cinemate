@@ -2,6 +2,7 @@
 using cinemate.Data.Entities;
 using cinemate.Models.Movie;
 using cinemate.Models.User;
+using cinemate.Services.TokenValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -13,27 +14,37 @@ namespace cinemate.Controllers
     {
         private readonly ILogger<LikesController> _logger;
         private readonly DataContext _context;
-      
+        private readonly TokenValidationService _tokenValidationService;
 
-        public LikesController(DataContext context, ILogger<LikesController> logger, DataContext dataContext)
+
+        public LikesController(DataContext context, ILogger<LikesController> logger, DataContext dataContext, TokenValidationService tokenValidationService)
         {
             _context = context;
             _logger = logger;
-         
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpGet("get-status")]
         public IActionResult GetStatus(Guid movieId)
         {
-            String userId = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
+            var userIdClaims = HttpContext
+                                .User
+                                .Claims
+                                .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                                .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             var like = _context.LikeForMovie
@@ -49,32 +60,32 @@ namespace cinemate.Controllers
         [HttpPost("toggle-like")]
         public IActionResult ToggleLike([FromBody] ToggleLikeRequestModel request)
         {
-
-
             if (request == null)
             {
                 return BadRequest("Invalid request first");
             }
-            if (HttpContext.User.Identity?.IsAuthenticated ?? false)
-            {
-               
-                // Если пользователь не аутентифицирован, вернуть ошибку
-                String userIdClaims = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
+            // Если пользователь не аутентифицирован, вернуть ошибку
+            var userIdClaims = HttpContext
+                            .User
+                            .Claims
+                            .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                            .Value;
 
+            if (userIdClaims == null)
+            {
+                userIdClaims = _tokenValidationService.ValidateToken();
                 if (userIdClaims == null)
                 {
-                    return NotFound("Элемент не найден");
-                }
-                if (!Guid.TryParse(userIdClaims, out var userId))
-                {
-                    return BadRequest("Invalid user ID"); // Если не удалось преобразовать в Guid, вернуть ошибку
+                    return Unauthorized();
                 }
 
-                if (!Guid.TryParse(request.MovieId, out var movieId))
+            }
+            if (!Guid.TryParse(userIdClaims, out var userId))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
+            }
+
+            if (!Guid.TryParse(request.MovieId, out var movieId))
                 {
                     return BadRequest("Invalid Movie ID"); // Если не удалось преобразовать в Guid, вернуть ошибку
                 }
@@ -180,22 +191,7 @@ namespace cinemate.Controllers
 
                     });
                 }
-
-               
-            }
-            
-            return Ok(new ToggleLikeRequestModel
-            {
-                MovieId = request.MovieId,
-                IsLiked = request.IsLiked,
-                IsDisliked = request.IsDisliked
-
-            });
-        
         }
-              
-
-
-        
+   
     }
 }

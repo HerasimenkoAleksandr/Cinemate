@@ -2,6 +2,7 @@
 using cinemate.Data;
 using cinemate.Data.Entities;
 using cinemate.Models.Movie;
+using cinemate.Services.TokenValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,23 +16,35 @@ namespace cinemate.Controllers
     {
         private readonly DataContext _dataContext;
 
-        public FavoriteMoviesController(DataContext dataContext)
+        private readonly TokenValidationService _tokenValidationService;
+
+        public FavoriteMoviesController(DataContext dataContext, TokenValidationService tokenValidationService)
         {
             _dataContext = dataContext;
+            _tokenValidationService = tokenValidationService;
         }
 
         [HttpPost]  
         public IActionResult AddToFavorites([FromForm] Guid movieId)
         {
-            String userId = HttpContext
-                      .User
-                      .Claims
-                      .First(claim => claim.Type == ClaimTypes.Sid)
-                      .Value;
+            var userIdClaims = HttpContext
+                             .User
+                             .Claims
+                             .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                             .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             if (!_dataContext.MoviesEntities.Any(m => m.Id == movieId))
@@ -49,7 +62,7 @@ namespace cinemate.Controllers
 
             var favorite = new FavoriteMovieEntity
             {
-                UserId = Guid.Parse(userId),
+                UserId = userIdGuid,
                 MovieId = movieId
             };
 
@@ -62,20 +75,29 @@ namespace cinemate.Controllers
         [HttpDelete("{movieId:guid}")]
         public IActionResult RemoveFromFavorites(Guid movieId)
         {
-            String userId = HttpContext
-                     .User
-                     .Claims
-                     .First(claim => claim.Type == ClaimTypes.Sid)
-                     .Value;
+            var userIdClaims = HttpContext
+                            .User
+                            .Claims
+                            .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                            .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
             }
-            
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
+            }
+
 
             var favorite = _dataContext.FavoriteMovies
-                .FirstOrDefault(f => f.MovieId == movieId && f.UserId == Guid.Parse(userId));
+                .FirstOrDefault(f => f.MovieId == movieId && f.UserId == userIdGuid);
 
             if (favorite == null)
             {
@@ -91,16 +113,25 @@ namespace cinemate.Controllers
         [HttpGet]
         public IActionResult GetFavoriteMovies()
         {
-           
-            String userId = HttpContext
-                    .User
-                    .Claims
-                    .First(claim => claim.Type == ClaimTypes.Sid)
-                    .Value;
 
-            if (!Guid.TryParse(userId, out var userIdGuid))
+            var userIdClaims = HttpContext
+                              .User
+                              .Claims
+                              .FirstOrDefault(claim => claim.Type == ClaimTypes.Sid)?
+                              .Value;
+
+            if (userIdClaims == null)
             {
-                return Unauthorized();
+                userIdClaims = _tokenValidationService.ValidateToken();
+                if (userIdClaims == null)
+                {
+                    return Unauthorized();
+                }
+
+            }
+            if (!Guid.TryParse(userIdClaims, out var userIdGuid))
+            {
+                return BadRequest("Invalid user ID format"); // Если не удалось преобразовать в Guid, вернуть ошибку
             }
 
             // Получаем все фильмы, которые добавлены в избранное текущим пользователем
