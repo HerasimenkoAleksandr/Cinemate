@@ -10,29 +10,45 @@
     <h1>Backend for Cinemate</h1>
 </div>
 
-
 <div class="alert alert-primary">
-    Endpoint - запит для реєстрації користувача<br />
-    URL: http://backend.cinemate.pp.ua/api/signupuser<br />
-    метод запиту - POST
+    <p><b>Домен:</b> http://backend.cinemate.pp.ua/</p>
+    <p>
+        <b>Формат запитів:</b> JSON та FormData
+    </p>
+    <p>
+        <b>Авторизація:</b> Для доступу до деяких ендпоінтів необхідно 
+        пройти авторизацію за допомогою логіну та пароля. Після успішної авторизації
+        користувач отримує доступ до операцій із фільмами, коментарями, обраними фільмами та ін.
+        Статус авторизації перевіряється через заголовки запитів або токени.
+    </p>
+</div>
+
+<div class="text-center">
+    <h3>Ендпоінти для роботи з користувачами</h3>
+</div>
+<div class="alert alert-primary">
+    <p><b>Реєстрація користувача</b></p>
+    <p><b>Метод:</b> POST</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/signupuser</p>
+    <b>Параметри:</b>
     <ul>
-        ключі відповідно до моделі сервера
+       
         <li>userName</li>
         <li>firstName</li>
         <li>surname</li>
-        <li>email - обов'язкове поле</li>
+        <li>email (обов'язково)</li>
         <li>phoneNumber</li>
-        <li>password - обов'язкове поле</li>
+        <li>password (обов'язково)</li>
         <li>avatar</li>
     </ul>
 </div>
 
 <div class="alert alert-primary">
-    Endpoint - запит для зміни інформації про користувача<br />
-    URL: http://backend.cinemate.pp.ua/api/signupuser<br />
-    метод запиту - PATCH
+    <p><b>Зміна інформації про користувача</b></p>
+    <p><b>Метод:</b> PATCH</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/signupuser</p>
+    <b>Параметри:</b> (можна змінювати будь-які з них)
     <ul>
-        ключі відповідно до моделі сервера(не обов'язкові)
         <li>userName</li>
         <li>firstName</li>
         <li>surname</li>
@@ -43,18 +59,17 @@
 </div>
 
 <div class="alert alert-primary">
-    Endpoint - авторизація користувача<br />
-    URL: http://backend.cinemate.pp.ua/api/auth<br />
-    метод запиту - POST
+    <p><b> Авторизація користувача</b></p>
+    <p><b>Метод:</b> POST</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/auth</p>
+    <b>
+        Параметри:
+    </b>
     <ul>
-        ключі відповідно до моделі сервера
-        <li>email - обов'язкове поле (для прикладу використовуйте-qaaa@gmail.com)</li>
-        <li>password - обов'язкове поле (для прикладу використовуйте-1111)</li>
-        <li>qaaa@gmail.com - надано статус адміністратора.</li>
+        <li> <b>email </b>(обов'язково)</li> 
+        <li> <b> password </b>(обов'язково)</li>
     </ul>
-
-
-    @{
+   @{
         var userName = Context.Session.GetString("AuthUserId");
     }
 
@@ -80,54 +95,60 @@
 </div>
 
 <div class="alert alert-primary">
+    <p><b>Вихід користувача</b></p>
+    <p><b>Метод:</b> DELETE</p>
+    <p><b>URL:</b>http://backend.cinemate.pp.ua/api/auth</p>
+        @if (userName != null)
+        {
+            <button class="btn btn-light" id="deleteAuthUser">Exit</button>
+        }
+</div>
+
+<div class="alert alert-primary">
     <div>
-        Endpoint - повертає інформацію про авторизованого користувача<br />
+        <p><b>Отримання інформації про користувача</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/signupuser</p>
         @if (userName != null)
         {
             <button class="btn btn-light" id="loadUserData">Load user data</button>
         }
         else
         {
-            <p>Кнопки будуть активні після авторизації </p>
-            <button class="btn btn-light" id="loadUserData" disabled>Load user data</button>
-        }
-        URL: http://backend.cinemate.pp.ua/api/signupuser
-    </div>
 
+             <p> <button class="btn btn-light" id="loadUserData" disabled>Load user data</button>
+                - Необхідно авторизуватись
+            </p>
+        }
+    </div>
     <div id="userdata"></div>
 </div>
 
 
-<div class="alert alert-primary">
-    Endpoint - вихід користувача<br />
-    URL: http://backend.cinemate.pp.ua/api/auth<br />
-    метод запиту - DELETE
-    <div class="alert alert-primary">
-        @if (userName != null)
-        {
-            <button class="btn btn-light" id="deleteAuthUser">Exit</button>
-        }
-    </div>
+
+<div class="text-center">
+    <h3>
+        Ендпоінти для роботи з фільмами та категоріями
+    </h3>
 </div>
-
-
 
 <div class="alert alert-primary">
 <div>
-     Endpoint - повертає перелік категорій на які розподілено фільми<br />
+        <p><b>Перелік категорій</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL:</b>  http://backend.cinemate.pp.ua/api/Categories</p>
         <button class="btn btn-light" id="loadCategories">Load Categories</button>
-    URL: http://backend.cinemate.pp.ua/api/Categories
 </div>
-
 <div  id="categories"></div>
 </div>
 
 
 <div class="alert alert-primary">
 <div>
-        Endpoint - повертає перелік підкатегорій на які розділено категрії<br />
+        <p><b>Перелік підкатегорій для категорії</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL: </b>http://backend.cinemate.pp.ua/api/Categories/{categoryId}<p/>
         <button class="btn btn-light" id="loadSubCategories">Load SubCategories</button>
-    URL: http://backend.cinemate.pp.ua/api/Categories/61D20472-5017-48B9-B976-07E36A396A95
 </div>
 
 <div  id="subcategories"></div>
@@ -136,20 +157,21 @@
 
     <div class="alert alert-primary">
 <div>
-        Endpoint - повертає усі фільми обраної категрії <br />
+        <p><b>Перелік фільмів для категорії</b></p>
+        <p><b>Метод:</b> GET<p/>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/movies?categoryId={categoryId}</p>
         <button class="btn btn-light" id="loadMoviesFromCategories">Load Movies From Categories</button>
-    URL: https://backend.cinemate.pp.ua/api/movies?categoryId=61D20472-5017-48B9-B976-07E36A396A95
 </div>
-
 <div  id="moviesFromCategories"></div>
 </div>
 
 
 <div class="alert alert-primary">
 <div>
-        Endpoint - повертає усі фільми обраної підкатегорії <br />
+        <p><b>Перелік фільмів для підкатегорії</b></p>
+        <p><b>Метод:</b> GET<p />
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/movies?subcategoryId={subcategoryId}</p>
         <button class="btn btn-light" id="loadMoviesFromSubCategories">Load Movies From SubCategories</button>
-    URL: https://backend.cinemate.pp.ua/api/movies?subcategoryId=0966A6CA-BE90-4AFF-BE04-CF4EFF71236E
 </div>
 
 <div  id="moviesFromSubCategories"></div>
@@ -158,53 +180,66 @@
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - повертає обраний фільм 
-        <br />
+        <p><b>Інформація про фільм за ID</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/movies/{movieId}</p>
         <button class="btn btn-light" id="loadMovie">Load Movie</button>
-        URL: https://backend.cinemate.pp.ua/api/movies/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5
     </div>
     <br />
     <div id="movie"></div>
 </div>
 
 
+<div class="text-center">
+    <h3>
+        Ендпоінти для взаємодії з лайками, дизлайками та коментарями
+    </h3>
+</div>
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - Обробляє лайки або дизлайки фільма після успішної автентифікації. <br />
+        <p><b>Лайк/Дизлайк фільма</b></p>
+        <p><b>Метод:</b> POST</p>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/likes/toggle-like</p>
+        <b>Параметри:</b>
+
+        <ul>
+            <li>movieId (обов'язково)</li>
+            <li>IsLiked (обов'язково false або true)</li>
+            <li>IsDisliked (обов'язково false або true)</li>
+        </ul>
+        <div>
         <button id="likeButton" class="btn btn-light" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-liked="false">Like</button>
         <button id="dislikeButton" class="btn btn-light" data-movie-id="5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" data-disliked="false">Dislike</button>
-        URL: https://backend.cinemate.pp.ua/api/likes/toggle-like<br /><br />
-        Метод запиту - POST<br />
-        приклад запиту:<br />
-          {MovieId": "123e4567-e89b-12d3-a456-426614174000"<br />
-          "IsLiked": true,<br />
-        "IsDisliked": false}<br /><br />
+        </div> <br/>
         <div id="likeCount"></div>
     </div><br />
+</div>
+
+<div class="alert alert-primary">
     <div>
-        Endpoint - повертає true чи false у разі якщо кнопка like\dislike натиснута або не натиснута авторизованим користувачем щодо фільму<br />
-        URL: https://backend.cinemate.pp.ua/api/likes/get-status?movieId=123e4567-e89b-12d3-a456-426614174000<br /><br />
+        <p><b>Отримати статус лайка/дизлайка для фільма</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL: </b> http://backend.cinemate.pp.ua/api/likes/get-status?movieId={movieId}</p>
+        <p><b>Для прикладу: </b>movieId=123e4567-e89b-12d3-a456-426614174000</p>
     </div>
     <div id="likeresult"></div>
 </div>
 
 
-
 <div class="alert alert-primary">
-    Endpoint - додати коментар до фільму<br />
-    URL: http://backend.cinemate.pp.ua/api/comment<br />
-    метод запиту - POST
+    <p><b>Додавання коментаря до фільму</b></p>
+    <p><b>Метод:</b> POST</p>
+    <p><b>URL: </b>http://backend.cinemate.pp.ua/api/comment</p>
+    <b>Параметри:</b>
     <ul>
-        ключі відповідно до моделі сервера
-        <li>IdMovie - обов'язкове поле = "123e4567-e89b-12d3-a456-426614174000"</li>
-        <li>Comment - обов'язкове поле</li>
+        <li>movieId (обов'язково)</li>
+        <li>comment (обов'язково)</li>
     </ul>
-
+    <p><b>Для прикладу movieId: </b>123e4567-e89b-12d3-a456-426614174000</p>
     <div class="alert alert-primary">
-        <p>Додайте коментар</p>
             <form id="commentForm" method="post">
-            <label for="commentId">Write a comment:</label>
+            <label for="commentId">Додайте коментар:</label>
             <textarea class="form-control" id="commentId" name="commentId" rows="3" required></textarea><br><br>
                 @if (userName != null)
                 {
@@ -212,8 +247,10 @@
                 }
                 else
                 {
-                <p>Кнопка буде активною після авторизації</p>
-                <button class="btn btn-light" type="submit" disabled>Add comment</button>
+                <p>
+                    <button class="btn btn-light" type="submit" disabled>Add comment</button>
+                    - необхідно авторизуватись
+                </p>
                 }
             </form>
         <div id="commentresponse"></div>
@@ -223,10 +260,11 @@
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - повертає коментарі до обраного фільму <br />
+        <p><b>Отримання коментарів для фільма</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL: </b> http://backend.cinemate.pp.ua/api/comment/{movieId}</p>
+        <p><b>Для прикладу movieId: </b>5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5</p>
         <button class="btn btn-light" id="loadComment">Load comments</button>
-        URL: http://backend.cinemate.pp.ua/api/comment/5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5 <br />
-        Id фільму - "5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5" <br />
     </div>
     <br />
     <div id="commentsAll"></div>
@@ -234,17 +272,14 @@
 
 
 <div class="alert alert-primary">
-    Endpoint - видалення коментаря по id <br />
-    URL: http://backend.cinemate.pp.ua/api/comment/{idComment}<br />
-    метод запиту - DELETE
-    ключі відповідно до моделі сервера
+    <p><b>Видалення коментаря по ID</b></p>
+    <p><b>Метод: </b>DELETE</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/comment/{commentId}</p>
     <ul>
         <li>idComment - обов'язкове поле</li>
     </ul>
-    <br />
-    <p>Будь ласка додайте Id коментаря</p>
     <form id="deleteComment" >
-        <label for="idComment">Id comment:</label>
+        <label for="idComment">Додайте Id коментаря:</label>
         <input type="text" id="idComment" name="idComment" required><br><br>
         @if (userName != null)
         {
@@ -252,90 +287,100 @@
         }
         else
         {
-            <p>Кнопка буде активною після авторизації</p>
+            <p>
             <button class="btn btn-light" type="submit" disabled>Delete comment</button>
+                -необхідно авторизуватись
+            </p>
         }
     </form>
     <div id="resultDeleteCommentMessage"></div>
     
 </div>
 
-
+<div class="text-center">
+    <h3>
+        Ендпоінти для роботи з обраними фільмами
+    </h3>
+</div>
 <div class="alert alert-primary">
-    Endpoint - додавання фільму до категорії обраних<br />
-    URL: http://backend.cinemate.pp.ua/api/FavoriteMovies<br />
-    метод запиту - POST
+    <p><b>Додавання фільму до обраних</b></p>
+    <p><b>Метод: </b>POST</p>
+    <p><b>URL: </b> http://backend.cinemate.pp.ua/api/FavoriteMovies</p>
+    <b>Параметри:</b>
     <ul>
-        ключі відповідно до моделі сервера
-        <li>movieId - обязательное поле</li> 
+        <li>movieId (обов'язково)</li>
     </ul>
-    <br />
         @if (userName != null)
         {
         <button id="favoriteButton" class="btn btn-light" type="submit">Додати в обране</button>
         }
         else
         {
-            <p>Кнопка буде активною після авторизації</p>
-        <button id="favoriteButton" class="btn btn-light" type="submit" disabled>Додати в обране</button>
+            <p>
+        <button id="favoriteButton" class="btn btn-light" type="submit" disabled>Додати в обране</button> 
+         - необхідно авторизуватися</p>
         }
 
     <div id="favoriteResponse"></div>
 </div>
 
 <div class="alert alert-primary">
-    Endpoint - видалення фільму з обраних <br />
-    URL: http://backend.cinemate.pp.ua/api/favoritemovies<br />
-    метод запиту - DELETE
+    <p><b>Видалення фільму з обраних</b></p>
+    <p><b>Метод: </b>DELETE</p>
+    <p><b>URL: </b> http://backend.cinemate.pp.ua/api/FavoriteMovies</p>
+    <b>Параметри:</b>
     <ul>
-    ключі відповідно до моделі сервера
-    <li> movieId - обязательное поле</li>
+        <li>movieId (обов'язково)</li>
     </ul>
-    <br />
         @if (userName != null)
         {
         <button id="favoriteButtonDelete" class="btn btn-light" type="submit">Remove movie from Favorites</button>
         }
         else
         {
-            <p>Кнопка буде активною після авторизації</p>
+        <p>
         <button id="favoriteButtonDelete" class="btn btn-light" type="submit" disabled>Remove movie from Favorites</button>
+         - необхідно авторизуватись
+        </p>
         }
     <div id="resultDeleteMovieFromFavoritesMessage"></div>
 </div>
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - повертає усі фільми які авторизованим користувачем додано до "обраних"<br />
+        <p><b>Отримання всіх фільмів з обраних</b></p>
+        <p><b>Метод: </b>GET</p>
+        <p><b>URL:</b>http://backend.cinemate.pp.ua/api/FavoriteMovies</p>
         @if (userName != null)
         {
             <button class="btn btn-light" id="loadFavoriteMovies">Load favorite movies</button>
         }
         else
         {
-            <p>Кнопка буде активною після авторизації</p>
+            <p>
             <button class="btn btn-light" id="loadFavoriteMovies" disabled>Load favorite movies</button>
+                - необхідно авторизуватись
+            </p>
         }
-       
-        URL: http://backend.cinemate.pp.ua/api/FavoriteMovies
     </div>
 
     <div id="resultFavoriteMovies"></div>
 </div>
 
+<div class="text-center">
+    <h3>
+        Ендпоінти для роботи з "заблокованими" фільмами
+    </h3>
+</div>
 <div class="alert alert-primary">
-    Endpoint - заблокувати фільм по ID <br />
-    URL: http://backend.cinemate.pp.ua/api/{movieId}/ban<br />
-    метод запиту - PATCH
-    <br /><br />
-    Endpoint - розблокувати фільм по ID <br />
-    URL: http://backend.cinemate.pp.ua/api/{movieId}/unban<br />
-    метод запиту - PATCH
-    <br />
-    <br />
-    Необхідно додати Id фільму
+    <p><b>Заблокувати фільм по ID</b></p>
+    <p><b>Метод: </b>PATCH</p>
+    <p><b>URL: </b>http://backend.cinemate.pp.ua/api/{movieId}/ban</p>
+    <p><b>Розблокувати фільм по ID</b></p>
+    <p><b>Метод: </b>PATCH</p>
+    <p><b>URL: </b>http://backend.cinemate.pp.ua/api/{movieId}/unban</p>
     <form id="banMovieForm">
-        <label for="idMovieBan">Id movie:</label>
+        <label for="idMovieBan">Додайте Id фільму:</label>
         <input type="text" id="idMovieBan" name="idMovieBan" required><br><br>
         @if (userName != null)
         {
@@ -344,9 +389,10 @@
         }
         else
         {
-            <p>Кнопки будуть активні після авторизації - дані будуть обролятись по запиту адміністратора</p>
+            <p>
             <button class="btn btn-light" type="submit" disabled>Ban</button>
             <button class="btn btn-light" type="submit" disabled>Unban</button>
+            -необхідно авторизуватись -доступно лише адміністратору</p>
         }
     </form>
     <div id="resultBanMessage"></div>
@@ -354,101 +400,125 @@
 </div>
 
 <div class="alert alert-primary">
-    <div>
-        Endpoint - повертає адміністратору усі фільми, що заблоковано  <br />
+    <p><b> Отримати всі заблоковані фільми</b></p>
+    <p><b>Метод: </b>GET</p>
+    <p><b>URL: </b>http://backend.cinemate.pp.ua/api/movies/banned</p>
         @if (userName != null)
         {
             <button class="btn btn-light" id="loadMoviesFromStatusBlokce">Load movies from the blocked list</button>
         }
         else
         {
-            <p>Кнопки будуть активні після авторизації - дані будуть обролятись по запиту адміністратора</p>
+        <p>
             <button class="btn btn-light" id="loadMoviesFromStatusBlokce" disabled>Load movies from the blocked list</button>
+            -необхідно авторизуватись - доступно лише адміністратору
+        </p>
         }
-        URL: https://backend.cinemate.pp.ua/api/movies/banned
-    </div>
-
     <div id="moviesFromStatusBlokce" "></div>
 </div>
 
-<div class="alert alert-primary">
-    Endpoint - запит для збереження часу, на якому було призупинено перегляд фільму, авторизованим користувачем<br />
-    URL: http://cinemate.pp.ua/api/pause/save<br />
-    метод запиту - POST
-    <ul>
-        ключі відповідно до моделі сервера
-        <li>movieId</li>
-        <li>pauseTime</li>
-    </ul>
+<div class="text-center">
+    <h3>
+        Ендпоінти для збереження інформації про час паузи
+    </h3>
 </div>
 
 <div class="alert alert-primary">
-    Endpoint - запит - повертає час, на якому було призупинено перегляд фільму, авторизованим користувачем<br />
-    URL: http://cinemate.pp.ua/api/pause/{movieId}<br />
-    метод запиту - GET
+    <p><b>Збереження часу паузи фільму</b></p>
+    <p><b>Метод:</b> POST</p>
+    <p><b>URL:</b> http://cinemate.pp.ua/api/pause/save</p>
+    <b>Параметри:</b>
     <ul>
-        movieId - ID фільму
+        <li>movieId (обов'язково)</li>
+        <li>pauseTime (обов'язково)</li>
     </ul>
 </div>
 
+
 <div class="alert alert-primary">
+    <p><b>Отримання часу паузи для фільму</b></p>
+    <p><b>Метод:</b> GET</p>
+    <p><b>URL:</b> http://cinemate.pp.ua/api/pause/{movieId}</p>
+</div>
+
+<div class="alert alert-primary">
+    <p><b>Отримання переліку фільмів з часом паузи для користувача</b></p>
+    <p><b>Метод:</b> GET</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/pause</p>
     <div>
-        Endpoint - повертає перелік фільмів з часом, на якому було призупинено їх перегляд, авторизованим користувачем<br />
     @if (userName != null)
     {
             <button class="btn btn-light" id="loadpause">Load movies with pause</button>
     }
     else
     {
-            <p>Кнопка буде активна після авторизації </p>
+            <p> 
             <button class="btn btn-light" id="loadpause" disabled>Load movies with pause</button>
+                 -необхідно авторизуватись </p >
     }
-        URL: http://backend.cinemate.pp.ua/api/pause
     </div>
 
     <div id="pause"></div>
 </div>
 
+<div class="text-center">
+    <h3>
+        Ендпоінти для роботи з пріоритетними категоріями
+    </h3>
+</div>
+
 <div class="alert alert-primary">
-    Endpoint - запит, який встановлює для користувача пріорітетні категорії<br />
-    URL: http://backend.cinemate.pp.ua/api/prioritycategories<br />
-    метод запиту - POST
+    <p><b> Встановлення пріоритетних категорій</b></p>
+    <p><b>Метод:</b> POST</p>
+    <p><b>URL:</b> http://backend.cinemate.pp.ua/api/prioritycategories</p>
+    <b>Параметри:</b>
     <ul>
-        <li> Content-Type: application/json </li>
-        <li> ["guid1", "guid2", "guid3"]</li>     
+        <li>
+            JSON масив GUID-ів категорій: ["guid1", "guid2", "guid3"]
+        </li>
     </ul>
 </div>
 
 <div class="alert alert-primary">
     <div>
-        Endpoint - повертає перелік пріорітетних фільмів враховуючи вибір пріорітетних категорій користувачем <br />
-        метод запиту - GET<br />
+        <p><b>Отримання фільмів за пріоритетними категоріями</b></p>
+        <p><b>Метод:</b> GET</p>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/prioritycategories</p>
+        <b>Параметри:</b>
     @if (userName != null)
     {
             <button class="btn btn-light" id="loadPriority">Load movies </button>
     }
     else
     {
-            <p>Кнопка буде активна після авторизації </p>
+            <p> 
             <button class="btn btn-light" id="loadPriority" disabled>Load movies</button>
+                - необхідно авторизуватись
+            </p>
     }
-        URL: http://backend.cinemate.pp.ua/api/prioritycategories
     </div>
     <div id="priority"></div>
 </div>
 
+<div class="text-center">
+    <h3>
+       Пошук фільмів
+    </h3>
+</div>
 <div class="alert alert-primary">
-    Endpoint - пошук фільмів<br />
-    URL: http://backend.cinemate.pp.ua//api/movies/search?search={search}<br />
-    метод запиту - GEt
+    <p><b>Пошук фільмів за ключовим(и) слов(ом/ами)</b></p>
+    <p><b>Метод:</b> GET</p>
+    <p><b>URL:</b>  http://backend.cinemate.pp.ua/api/movies/search?search={search}</p>
+    <b>Параметри:</b>
     <ul>
-        <li>{search} - рядок, введена користувачем інформація щодо пошуку фільму"</li>
+        <li>
+            search (рядок для пошуку)
+        </li>
     </ul>
-
     <div class="alert alert-primary">
         <p>Введіть інформацію для пошуку</p>
         <form id="searchForm" method="post">
-            <label for="searchId">Search:</label>
+    @* <label for="searchId">Search:</label>*@
             <input class="form-control" id="searchId"  placeholder="Поиск..." name="searchId" type="text" required></input><br><br>
             <button class="btn btn-light" type="submit">Search</button>
  @*    @if (userName != null)

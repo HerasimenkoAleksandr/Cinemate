@@ -2,6 +2,7 @@ using cinemate.Data;
 using cinemate.Middleware;
 using cinemate.Services.DataInitializer;
 using cinemate.Services.Hash;
+using cinemate.Services.MovieDurationsService;
 using cinemate.Services.TokenValidation;
 using cinemate.Services.YouTubeService;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -45,6 +46,10 @@ builder.Services.AddSingleton<IHashService, Md5HashService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<TokenValidationService>(); // Регистрируем сервис
+//builder.Services.AddScoped<AddDurationService>();  // Регистрация вашего сервиса
+
+//// Регистрация HttpClient для использования в AddDurationService (если необходимо)
+//builder.Services.AddHttpClient();
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -92,6 +97,20 @@ builder.Services.AddControllersWithViews();
 //builder.Services.AddTransient<AddFromYouTubeService>();
 
 var app = builder.Build();
+//Выполнение асинхронной задачи до старта приложения
+
+/*using (var scope = app.Services.CreateScope())
+{
+    var durationService = scope.ServiceProvider.GetRequiredService<AddDurationService>();    try
+   {
+       await durationService.UpdateMovieDurationsAsync();  // Асинхронное выполнение задачи обновления продолжительности фильмов
+    }
+   catch (Exception ex)
+   {
+       // Логирование ошибки или обработка
+        Console.WriteLine($"Ошибка при обновлении продолжительности фильмов: {ex.Message}");
+    }
+}*/
 
 app.Use(async (context, next) =>
 {

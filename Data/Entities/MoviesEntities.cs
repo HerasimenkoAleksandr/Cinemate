@@ -10,6 +10,7 @@
         public int ReleaseYear { get; set; }
         public String? Director { get; set; }
         public String[]? Actors { get; set; }
+        public String? Duration { get; set; }
         public int? likeCount { get; set; }
         public int? dislikeCount { get; set; }
         public Guid CategoryId { get; set; }

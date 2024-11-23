@@ -204,7 +204,7 @@ function deleteCookie(name) {
     function handleDeleteMovieFromFavoritesSubmit(event) {
     event.preventDefault(); // Предотвращаем стандартное действие формы
 
-    const movieId = "5DF3E4B9-F8D1-4E0A-82DD-012444EFF7E5";
+        const movieId = "5df3e4b9-f8d1-4e0a-82dd-012444eff7e5";
   
     // Вызываем функцию удаления комментария
     deleteMovieFromFavorites(movieId);
@@ -265,7 +265,7 @@ function deleteCookie(name) {
     })
     .catch(error => {
         console.error('Ошибка:', error);
-        document.getElementById('favoriteResponse').textContent = 'Ошибка добавления фильма в избранное.';
+        document.getElementById('favoriteResponse').textContent = 'Помилка додавання фільму до обраних';
     });
     }
     function handleDeleteCommentFormSubmit(event) {
