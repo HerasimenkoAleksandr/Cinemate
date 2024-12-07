@@ -1,6 +1,7 @@
 ﻿using cinemate.Data.Entities;
 using cinemate.Data;
 using Newtonsoft.Json.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace cinemate.Services.YouTubeService
 {
@@ -9,10 +10,10 @@ namespace cinemate.Services.YouTubeService
         private static readonly HttpClient client = new HttpClient();
         private const string apiKey = "AIzaSyAQ2JIQgMv0660U_lrAQt--OBvTrh6gvyU"; // Ваш API ключ
         private const string apiUrl = "https://www.googleapis.com/youtube/v3/videos";
-        
-      
 
-        public static async Task<MoviesEntities> GetMovieFromYouTubeAsync(DataContext context, String videoId, Guid categoryId, Guid subCategoryId)
+        
+
+public static async Task<MoviesEntities> GetMovieFromYouTubeAsync(DataContext context, String videoId, Guid categoryId, Guid subCategoryId)
         {
             var url = $"{apiUrl}?part=snippet,contentDetails,statistics&id={videoId}&key={apiKey}";
             var response = await client.GetStringAsync(url);

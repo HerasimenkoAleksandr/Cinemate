@@ -14,6 +14,9 @@ namespace cinemate.Data
         public DbSet<FavoriteMovieEntity> FavoriteMovies { get; set; }
         public DbSet<PausedMovieEntity> PausedMovies { get; set; }
         public DbSet<PriorityCategoriesEntity> PriorityCategories { get; set; }
+        public DbSet<NotificationEntity> Notifications { get; set; }
+        public DbSet<UserNotificationEntity> UserNotifications { get; set; }
+
         public DataContext(DbContextOptions options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,6 +98,27 @@ namespace cinemate.Data
                 .HasOne(upc => upc.Category)
                 .WithMany(c => c.PriorityUsers)
                 .HasForeignKey(upc => upc.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Настройка связи между Notification и MoviesEntities (один ко многим)
+            modelBuilder.Entity<NotificationEntity>()
+                .HasOne(n => n.Movie)
+                .WithMany()
+                .HasForeignKey(n => n.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Настройка связи между UserNotification и User (один ко многим)
+            modelBuilder.Entity<UserNotificationEntity>()
+                .HasOne(un => un.User)
+                .WithMany(u => u.UserNotification)
+                .HasForeignKey(un => un.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Настройка связи между UserNotification и Notification (один ко многим)
+            modelBuilder.Entity<UserNotificationEntity>()
+                .HasOne(un => un.Notification)
+                .WithMany()
+                .HasForeignKey(un => un.NotificationId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -2,6 +2,8 @@
 {
     public class User
     {
+        internal readonly object UserNotifications;
+
         public Guid Id { get; set; }
         public String? UserName { get; set; } 
         public String? FirstName { get; set; }
@@ -18,7 +20,7 @@
         public ICollection<CommentMoviesEntity> CommentMovies { get; set; } = new List<CommentMoviesEntity>();
 
         public ICollection<FavoriteMovieEntity> FavoriteMovies { get; set; } = new List<FavoriteMovieEntity>();
-
+        public ICollection<UserNotificationEntity> UserNotification { get; set; } = new List<UserNotificationEntity>();
         public ICollection<PausedMovieEntity> PausedMovies { get; set; } = new List<PausedMovieEntity>();
         public ICollection<PriorityCategoriesEntity> PriorityCategories { get; set; } = new List<PriorityCategoriesEntity>();
     }

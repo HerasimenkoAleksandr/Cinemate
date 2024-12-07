@@ -426,7 +426,10 @@ function deleteCookie(name) {
                     console.error('Error:', error);
                 });
         }
-    function updateButtonStates() {
+
+   
+        
+function updateButtonStates() {
             //const movieId = likeButton ? likeButton.dataset.movieId : null;
         const movieId = likeButton.dataset.movieId;
     if (movieId) {
@@ -479,7 +482,70 @@ function deleteCookie(name) {
             loadData('#loadFavoriteMovies', ' /api/FavoriteMovies', '#resultFavoriteMovies');
             loadData('#loadMoviesFromStatusBlokce', ' api/movies/banned', '#moviesFromStatusBlokce');
             loadData('#loadpause', '/api/pause', '#pause');
-            loadData('#loadPriority', '/api/prioritycategories', '#priority');
+        loadData('#loadPriority', '/api/prioritycategories', '#priority');
+        loadData('#loadNotification', '/api/Notification', '#resultNotification');
         });
     
+const statusNotificationButton = document.getElementById('readButton');
 
+statusNotificationButton.addEventListener('click', () => {
+    handleNotification(true);
+    loadData('#loadNotification', '/api/Notification', '#resultNotification');
+
+});
+
+function handleNotification(isRead) {
+    const requestBody = {
+        NotificationId: "66094E14-8126-499E-8C23-E3817B12DB63",
+        IsRead: isRead
+    };
+
+    fetch('/api/Notification/mark', {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+        .then(response => {
+            // Проверяем, какой тип данных возвращает сервер
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json(); // Если это JSON, парсим как JSON
+            } else {
+                return response.text(); // Иначе обрабатываем как текст
+            }
+        })
+        .then(data => {
+            updateNotificationStatus();
+            // Проверяем, что именно возвращено (строка или объект)
+            if (typeof data === 'string') {
+                console.log('Success (text):', data);
+                document.getElementById('resNotStatus').innerText = data;
+            } else {
+                console.log('Success (json):', data);
+                document.getElementById('resNotStatus').innerText = data.status || 'Success';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('resNotStatus').innerText = `Error: ${error.message}`;
+        });
+}
+
+function updateNotificationStatus() {
+   
+   
+    fetch(`/api/Notification`, {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultNotification').textContent = JSON.stringify(data, null, 2);
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    
+}

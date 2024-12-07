@@ -94,7 +94,7 @@ builder.Services.AddCors(options =>
 // Добавление контроллеров с представлениями
 builder.Services.AddControllersWithViews();
 
-//builder.Services.AddTransient<AddFromYouTubeService>();
+builder.Services.AddTransient<AddFromYouTubeService>();
 
 var app = builder.Build();
 //Выполнение асинхронной задачи до старта приложения
@@ -120,37 +120,36 @@ app.Use(async (context, next) =>
 
     await next();
 });
-/*using (var serviceScope = app.Services.CreateScope())
+using (var serviceScope = app.Services.CreateScope())
 {
     var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
 
     // Преобразуем строку в Guid
-    Guid categoryId = new Guid("6FCD873E-ACEE-4CFB-982B-BE425D9FD751");
-    //await DataInitializerService.InitializeAsync(context, categoryId);
+    Guid categoryId = new Guid("61D20472-5017-48B9-B976-07E36A396A95");
+  //  await DataInitializerService.InitializeAsync(context, categoryId);
 
-    Guid subCategoryId1 = new Guid("5934CBF4-91E4-458B-A7E2-FB27561F139E");
-    List<String> videoId1= new() { "9_UEYrO1QYk", "67rlpf3RpFk", "53DgKqq9C84", "HQGPDRIVfOE", "wcKkTaP4pcY", "NGFAydiCAKs", "hnV7quaKB-U" };
+    Guid subCategoryId1 = new Guid("24161DC2-2BB3-4E46-AA1F-848B986F28EC");
+    List<String> videoId1 = new() { "RZya6omSSDw", "aCSu6iGJoX4" };
 
-   Guid subCategoryId2 = new Guid("7CACAB9C-C471-4E13-BE8F-A6F73F7678D7");
-    List<String> videoId2 = new() { "MfA5zpfG1fI", "as-6afI4vL8&t", "By4kCIfpjGE", "pVAWKrtJEMo"};
-    
-    Guid subCategoryId3 = new Guid("0966A6CA-BE90-4AFF-BE04-CF4EFF71236E");
-    List<String> videoId3 = new() { "", "", "", "", "" };
-    // Передаем Guid в метод
-    //"", "", "", "", ""
+    /* Guid subCategoryId2 = new Guid("7CACAB9C-C471-4E13-BE8F-A6F73F7678D7");
+      List<String> videoId2 = new() { "MfA5zpfG1fI", "as-6afI4vL8&t", "By4kCIfpjGE", "pVAWKrtJEMo"};
 
+      Guid subCategoryId3 = new Guid("0966A6CA-BE90-4AFF-BE04-CF4EFF71236E");
+      List<String> videoId3 = new() { "", "", "", "", "" };
+      // Передаем Guid в метод
+      //"", "", "", "", ""
+    */
     // Получите экземпляр сервиса
     var youTubeService = serviceScope.ServiceProvider.GetRequiredService<AddFromYouTubeService>();
 
     // Добавьте фильм (замените VIDEO_ID на реальный идентификатор видео)
-     foreach (var id1 in videoId1)
+    foreach (var id1 in videoId1)
     { await AddFromYouTubeService.GetMovieFromYouTubeAsync(context, id1, categoryId, subCategoryId1); }
-     foreach (var id2 in videoId2)
+}
+    /* foreach (var id2 in videoId2)
     { await AddFromYouTubeService.GetMovieFromYouTubeAsync(context, id2, categoryId, subCategoryId2); }
    foreach (var id3 in videoId3)
-    { await AddFromYouTubeService.GetMovieFromYouTubeAsync(context, id3, categoryId, subCategoryId3); }
-
-   
+    { await AddFromYouTubeService.GetMovieFromYouTubeAsync(context, id3, categoryId, subCategoryId3); }  
 }*/
 
 // Конфигурация HTTP request pipeline

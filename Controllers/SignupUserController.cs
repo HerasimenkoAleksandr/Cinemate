@@ -62,7 +62,7 @@ namespace cinemate.Controllers
             // Проверка, Password
             if (String.IsNullOrEmpty(userModel.Password))
             {
-                results.EmailErrorMessage = "Password cannot be empty!";
+                results.PasswordErrorMessage = "Password cannot be empty!";
                 isFormValid = false;
             }
 

@@ -521,18 +521,51 @@
     @* <label for="searchId">Search:</label>*@
             <input class="form-control" id="searchId"  placeholder="Поиск..." name="searchId" type="text" required></input><br><br>
             <button class="btn btn-light" type="submit">Search</button>
- @*    @if (userName != null)
-    {
-                <button class="btn btn-light" type="submit">Search</button>
-    }
-    else
-    {
-                <p>Кнопка буде активною після авторизації</p>
-                <button class="btn btn-light" type="submit" disabled>Search</button>
-    } *@
         </form>
         <div id="searchresponse"></div>
     </div>
+</div>
+
+<div class="text-center">
+    <h3>
+        Повідомлення та їх статус
+    </h3>
+</div>
+
+<div class="alert alert-primary">
+    <p><b> Отримати всі повідомлення та їх статус щодо користувача(прочитано/не прочитано)</b></p>
+    <p><b>Метод: </b>GET</p>
+    <p><b>URL: </b>http://backend.cinemate.pp.ua/api/Notification</p>
+    @if (userName != null)
+    {
+        <button class="btn btn-light" id="loadNotification">Load notifications</button>
+    }
+    else
+    {
+        <p>
+            <button class="btn btn-light" id="loadNotification" disabled>Load notifications</button>
+            -необхідно авторизуватись 
+        </p>
+    }
+    <div id="resultNotification"></div>
+</div>
+
+<div class="alert alert-primary">
+    <div>
+        <p><b>Зміни стату повідомлення на прочитано</b></p>
+        <p><b>Метод:</b> PATCH</p>
+        <p><b>URL:</b> http://backend.cinemate.pp.ua/api/Notification/mark</p>
+        <b>Параметри:</b>
+
+        <ul>
+            <li>NotificationId (обов'язково)</li>
+            <li>IsRead (обов'язково false-не прочитано або true - прочитано)</li>
+        </ul>
+        <div>
+            <button id="readButton" class="btn btn-light">Read</button>
+        </div> <br />
+        <div id="resNotStatus"></div>
+    </div><br />
 </div>
 
    
